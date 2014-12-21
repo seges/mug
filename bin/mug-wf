@@ -1,0 +1,4 @@
+#!/bin/bash
+
+docker run -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix --rm -ti mug-wf /bin/bash 
+
