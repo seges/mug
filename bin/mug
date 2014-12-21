@@ -1,0 +1,23 @@
+#!/bin/bash
+
+cwd=$(pwd)
+if [ ! -f $cwd/package.json ]; then
+	echo "I don't think $cwd is frontend project"
+	exit 42
+fi
+
+function getJsonVal () { 
+   if [ \( $# -ne 1 \) -o \( -t 0 \) ]; then
+       echo "Usage: getJsonVal 'key' < /tmp/file";
+       echo "   -- or -- ";
+       echo " cat /tmp/input | getJsonVal 'key'";
+       return;
+   fi;
+   python -c "import json,sys;sys.stdout.write(json.dumps(json.load(sys.stdin)$1))";
+}
+
+project_name=$(cat $cwd/package.json | getJsonVal "['name']" | sed -e 's/^"//'  -e 's/"$//')
+echo "Running $project_name in $cwd"
+
+docker run -p 3000:3000 -v $cwd:/home/developer/$project_name  --rm -ti mug
+
