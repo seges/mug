@@ -1,19 +1,23 @@
-= Install
+Mug development workbench
+=========================
+
+
+# Install
 
 ```
 curl https://github.com/seges/mug/raw/master/setup.sh | sudo sh
 ```
 
-= Run
+# Run
 
-== Existing project
+## Existing project
 
 ```
 cd <project_dir>
 mug
 ```
 
-== New project
+## New project
 
 When you want to create a new project and you want to utilize the environment:
 
