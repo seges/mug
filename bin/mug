@@ -1,8 +1,19 @@
 #!/bin/bash
 
 cwd=$(pwd)
-if [ ! -f $cwd/package.json ]; then
-	echo "I don't think $cwd is frontend project"
+
+if [ $# -eq 1 ]; then
+	prj="$1"
+else
+	if [ -f $cwd/package.json ]; then
+		prj="frontend-javascript"
+	elif [ -f $cwd/build.sbt ]; then
+		prj="backend-scala"
+	fi
+fi
+
+if [ "$prj" == "" ]; then
+	echo "I don't think $cwd contains any supported project"
 	exit 42
 fi
 
@@ -16,8 +27,17 @@ function getJsonVal () {
    python -c "import json,sys;sys.stdout.write(json.dumps(json.load(sys.stdin)$1))";
 }
 
-project_name=$(cat $cwd/package.json | getJsonVal "['name']" | sed -e 's/^"//'  -e 's/"$//')
-echo "Running $project_name in $cwd"
 
-docker run -p 3000:3000 -v $cwd:/home/developer/$project_name  --rm -ti mug
+if [ "$prj" == "frontend-javascript" ]; then
+	project_name=$(cat $cwd/package.json | getJsonVal "['name']" | sed -e 's/^"//'  -e 's/"$//')
+	ports="-p 3000:3000"
+elif [ "$prj" == "backend-scala" ]; then
+	project_name=$(cat build.sbt | grep "name" | sed 's/.*"\([^"]*\)"/\1/')
+	volumes="-v $HOME/.ivy2-mug:/home/developer/.ivy2"
+fi
+
+volumes="-v $cwd:/home/developer/$project_name $volumes"
+echo "Running $project_name in $cwd as $prj [ volumes = $volumes , ports = $ports]"
+
+docker run $ports $volumes --rm -ti mug-$prj
 
