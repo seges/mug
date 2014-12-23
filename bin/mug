@@ -19,6 +19,7 @@ if [ $# -eq 1 ]; then
 		check_cwd_project
 	else
 		prj="$1"
+		project_name=$(basename $cwd)
 	fi
 else
 	check_cwd_project
@@ -41,10 +42,14 @@ function getJsonVal () {
 
 
 if [ "$prj" == "frontend-javascript" ]; then
-	project_name=$(cat $cwd/package.json | getJsonVal "['name']" | sed -e 's/^"//'  -e 's/"$//')
+	if [ "$project_name" == "" ]; then
+		project_name=$(cat $cwd/package.json | getJsonVal "['name']" | sed -e 's/^"//'  -e 's/"$//')
+	fi
 	ports="-p 3000:3000"
 elif [ "$prj" == "backend-scala" ]; then
-	project_name=$(cat build.sbt | grep "name" | sed 's/.*"\([^"]*\)"/\1/')
+	if [ "$project_name" == "" ]; then
+		project_name=$(cat build.sbt | grep "name" | sed 's/.*"\([^"]*\)"/\1/')
+	fi
 	volumes="-v $HOME/.ivy2-mug:/home/developer/.ivy2"
 fi
 
