@@ -2,14 +2,26 @@
 
 cwd=$(pwd)
 
-if [ $# -eq 1 ]; then
-	prj="$1"
-else
+repo="seges/"
+
+function check_cwd_project
+{
 	if [ -f $cwd/package.json ]; then
 		prj="frontend-javascript"
 	elif [ -f $cwd/build.sbt ]; then
 		prj="backend-scala"
 	fi
+}
+
+if [ $# -eq 1 ]; then
+	if [ "$1" == "--local" ]; then
+		repo=""
+		check_cwd_project
+	else
+		prj="$1"
+	fi
+else
+	check_cwd_project
 fi
 
 if [ "$prj" == "" ]; then
@@ -37,7 +49,7 @@ elif [ "$prj" == "backend-scala" ]; then
 fi
 
 volumes="-v $cwd:/home/developer/$project_name $volumes"
-echo "Running $project_name in $cwd as $prj [ volumes = $volumes , ports = $ports]"
+echo "Running $project_name in $cwd as ${repo}mug-$prj [ volumes = $volumes , ports = $ports]"
 
-docker run $ports $volumes --rm -ti mug-$prj
+docker run $ports $volumes --rm -ti ${repo}mug-$prj
 
