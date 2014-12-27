@@ -20,11 +20,11 @@ ENV HOME /home/developer
 
 # scala
 RUN cd /home/developer/opt && wget http://www.scala-lang.org/files/archive/scala-2.10.4.tgz 
-RUN cd /home/developer/opt && tar xzf scala-2.10.4.tgz && ln -s scala-2.10.4.tgz scala && echo "export PATH=\$PATH:/home/developer/opt/scala/bin" >> /home/developer/.bashrc
+RUN cd /home/developer/opt && tar xzf scala-2.10.4.tgz && ln -s scala-2.10.4 scala && echo "export PATH=\$PATH:/home/developer/opt/scala/bin" >> /home/developer/.bashrc
 
 # sbt
 RUN cd /home/developer/opt && wget https://dl.bintray.com/sbt/native-packages/sbt/0.13.7/sbt-0.13.7.tgz
-RUN cd /home/developer/opt && tar xzf sbt-0.13.7.tgz && ln -s sbt-0.13.7.tgz sbt && echo "export PATH=\$PATH:/home/developer/opt/sbt/bin" >> /home/developer/.bashrc
+RUN cd /home/developer/opt && tar xzf sbt-0.13.7.tgz && ln -s sbt-0.13.7 sbt && echo "export PATH=\$PATH:/home/developer/opt/sbt/bin" >> /home/developer/.bashrc
 RUN /home/developer/opt/sbt/bin/sbt about
 
 # sbt Idea
