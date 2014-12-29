@@ -16,13 +16,8 @@ function check_cwd_project
 }
 
 if [ $# -eq 1 ]; then
-	if [ "$1" == "--local" ]; then
-		repo=""
-		check_cwd_project
-	else
-		prj="$1"
-		project_name=$(basename $cwd)
-	fi
+	prj="$1"
+	project_name=$(basename $cwd)
 else
 	check_cwd_project
 fi
