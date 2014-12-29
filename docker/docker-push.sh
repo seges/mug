@@ -11,6 +11,11 @@ if [ $# -ne 1 ]; then
 	exit 42
 fi
 
-module=$1
-docker tag mug-$module seges/mug-$module
-docker push seges/mug-$module
+modules=$(get_modules $1)
+
+for module in $modules; do
+	echo -e "\e[1m**** Tagging and pushing module $module\e[0m"
+	docker tag mug-$module seges/mug-$module
+	docker push seges/mug-$module
+	echo -e "\e[1m**** Finished tagging and pushing module $module\e[0m"
+done

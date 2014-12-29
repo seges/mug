@@ -11,5 +11,10 @@ if [ $# -ne 1 ]; then
 	exit 42
 fi
 
-module=$1
-docker build --rm -t seges/mug-$module $module
+modules=$(get_modules $1)
+
+for module in $modules; do
+	echo -e "\e[1m**** Building module $module\e[0m"
+	docker build --rm -t seges/mug-$module $module
+	echo -e "\e[1m**** Finished building module $module\e[0m"
+done
