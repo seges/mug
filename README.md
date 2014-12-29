@@ -26,11 +26,18 @@ When you want to create a new project and you want to utilize the environment:
 
 ```
 cd <workspace_dir>
-mug <type>
+mug <module>
 ```
 
-Where *type* is one of:
+Where *module* is one of:
 
+* backend-java
 * backend-scala
 * frontend-javascript
 
+## Development
+
+* implement a Docker image inside "docker" directory
+* extend ```bin/mug``` script in order to properly identify the project
+
+Use ```docker-build.sh``` and ```docker-push.sh``` commands to prepare images.
