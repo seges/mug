@@ -10,6 +10,8 @@ function check_cwd_project
 		prj="frontend-javascript"
 	elif [ -f $cwd/build.sbt ]; then
 		prj="backend-scala"
+	elif [ -f $cwd/pom.xml ]; then
+		prj="backend-java"
 	fi
 }
 
@@ -30,7 +32,7 @@ if [ "$prj" == "" ]; then
 	exit 42
 fi
 
-function getJsonVal () { 
+function getJsonVal() { 
    if [ \( $# -ne 1 \) -o \( -t 0 \) ]; then
        echo "Usage: getJsonVal 'key' < /tmp/file";
        echo "   -- or -- ";
@@ -40,6 +42,9 @@ function getJsonVal () {
    python -c "import json,sys;sys.stdout.write(json.dumps(json.load(sys.stdin)$1))";
 }
 
+function getXmlVal() {
+	python -c "import xml.etree.ElementTree as ET;tree = ET.parse('$cwd/pom.xml');root = tree.getroot();print tree.find('./{http://maven.apache.org/POM/4.0.0}artifactId').text"
+}
 
 if [ "$prj" == "frontend-javascript" ]; then
 	if [ "$project_name" == "" ]; then
@@ -51,6 +56,12 @@ elif [ "$prj" == "backend-scala" ]; then
 		project_name=$(cat build.sbt | grep "name" | sed 's/.*"\([^"]*\)"/\1/')
 	fi
 	volumes="-v $HOME/.ivy2-mug:/home/developer/.ivy2"
+elif [ "$prj" == "backend-java" ]; then
+	if [ "$project_name" == "" ]; then
+		project_name=$(cat $cwd/pom.xml | getXmlVal )
+	fi
+	volumes="-v $HOME/.m2-mug:/home/developer/.m2"
+
 fi
 
 volumes="-v $cwd:/home/developer/$project_name $volumes"
