@@ -39,5 +39,8 @@ Where *module* is one of:
 
 * implement a Docker image inside "docker" directory
 * extend ```bin/mug``` script in order to properly identify the project
+* add initialization scripts in /docker-entrypoint-initdb.d using ADD or COPY
+** use ```entrypoint.sh``` as your main command
 
 Use ```docker-build.sh``` and ```docker-push.sh``` commands to prepare images.
+
