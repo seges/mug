@@ -4,29 +4,6 @@ cwd=$(pwd)
 
 repo="seges/"
 
-function check_cwd_project
-{
-	if [ -f $cwd/package.json ]; then
-		prj="frontend-javascript"
-	elif [ -f $cwd/build.sbt ]; then
-		prj="backend-scala"
-	elif [ -f $cwd/pom.xml ]; then
-		prj="backend-java"
-	fi
-}
-
-if [ $# -eq 1 ]; then
-	prj="$1"
-	project_name=$(basename $cwd)
-else
-	check_cwd_project
-fi
-
-if [ "$prj" == "" ]; then
-	echo "I don't think $cwd contains any supported project"
-	exit 42
-fi
-
 function getJsonVal() { 
    if [ \( $# -ne 1 \) -o \( -t 0 \) ]; then
        echo "Usage: getJsonVal 'key' < /tmp/file";
@@ -41,26 +18,54 @@ function getXmlVal() {
 	python -c "import xml.etree.ElementTree as ET;tree = ET.parse('$cwd/pom.xml');root = tree.getroot();print tree.find('./{http://maven.apache.org/POM/4.0.0}artifactId').text"
 }
 
-if [ "$prj" == "frontend-javascript" ]; then
-	if [ "$project_name" == "" ]; then
+function resolve_module
+{
+	if [ -f $cwd/package.json ]; then
+		module="frontend-javascript"
 		project_name=$(cat $cwd/package.json | getJsonVal "['name']" | sed -e 's/^"//'  -e 's/"$//')
-	fi
-	ports="-p 3000:3000"
-elif [ "$prj" == "backend-scala" ]; then
-	if [ "$project_name" == "" ]; then
-		project_name=$(cat build.sbt | grep "name" | sed 's/.*"\([^"]*\)"/\1/')
-	fi
-	volumes="-v $HOME/.ivy2-mug:/home/developer/.ivy2"
-elif [ "$prj" == "backend-java" ]; then
-	if [ "$project_name" == "" ]; then
+	elif [ -f $cwd/build.sbt ]; then
+		module="backend-scala"
+		project_name=$(cat $cwd/build.sbt | grep "name" | sed 's/.*"\([^"]*\)"/\1/')
+	elif [ -f $cwd/pom.xml ]; then
+		module="backend-java"
 		project_name=$(cat $cwd/pom.xml | getXmlVal )
 	fi
-	volumes="-v $HOME/.m2-mug:/home/developer/.m2"
+}
 
+while getopts "m:v:" opt; do
+	case $opt in
+		m)
+			module=$OPTARG
+			project_name=$(basename $cwd)
+			;;
+		v)
+			version=":$OPTARG"
+			;;
+                \?)
+			echo "help"
+			exit 42
+	esac
+done
+
+[ "$module" == "" ] && resolve_module
+
+
+if [ "$module" == "" ]; then
+	echo "I don't think $cwd contains any supported project"
+	exit 42
+fi
+
+
+if [ "$module" == "frontend-javascript" ]; then
+	ports="-p 3000:3000"
+elif [ "$module" == "backend-scala" ]; then
+	volumes="-v $HOME/.ivy2-mug:/home/developer/.ivy2"
+elif [ "$module" == "backend-java" ]; then
+	volumes="-v $HOME/.m2-mug:/home/developer/.m2"
 fi
 
 volumes="-v $cwd:/home/developer/$project_name $volumes"
-echo "Running $project_name in $cwd as ${repo}mug-$prj [ volumes = $volumes , ports = $ports]"
+echo "Running $project_name in $cwd as ${repo}mug-$module$version [ volumes = $volumes , ports = $ports]"
 
-docker run $ports $volumes --rm -ti ${repo}mug-$prj
+docker run $ports $volumes --rm -ti ${repo}mug-$module$version
 
