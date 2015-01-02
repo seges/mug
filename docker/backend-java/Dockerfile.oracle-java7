@@ -29,7 +29,7 @@ RUN mv /home/developer/.m2 /home/developer/.m2.tmpl
 
 RUN echo ". /home/developer/.alias" >> /home/developer/.bashrc
 
-ADD init.sh /home/developer/
+ADD entrypoint.sh /home/developer/
 ADD m2_copy.sh /docker-entrypoint-initdb.d/
 
 CMD ["sudo", "/home/developer/entrypoint.sh"]
