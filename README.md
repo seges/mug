@@ -39,6 +39,12 @@ Where **module** is one of:
 
 It is possible to add project or workbench specific data into the image by providing Docker container with specific name **mug-data**. If such container exists, *mug* will include it as "volumes-from".
 
+You have to run the data container, e.g.:
+
+```
+docker run --rm --name="mug-data" -ti acme/mug-data /bin/sh
+```
+
 ## Runtime initialization
 
 There is a possibility to initialize various aspects of the running environment, e.g. copying some workbench data upon start of the module container. It is strongly dependent on the module image implementation but images already implemented in mug have basic initialization routines.
