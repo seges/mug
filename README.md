@@ -56,8 +56,7 @@ Data that should be provided is usually contained either in:
 If you want to know more about the support for initialization in provided modules, take a look in the appropriate documentation of the module. In case you want to utilize the support in mug, you have to:
 * copy ```entrypoint.sh``` to your Docker context
 * create ```docker-entrypoint.d``` and include all initialization scripts inside
-* put following lines in Dockerfile:
-** ```
+* put following lines in Dockerfile: ```
 ADD entrypoint.sh /home/developer/
 ADD docker-entrypoint.d/ /docker-entrypoint.d/
 
