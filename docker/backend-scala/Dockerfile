@@ -38,7 +38,7 @@ RUN /home/developer/bin/cs n8han/giter8
 RUN mv /home/developer/.ivy2 /home/developer/.ivy2.tmpl
 
 ADD entrypoint.sh /home/developer/
-ADD ivy_copy.sh /docker-entrypoint.d/
+ADD docker-entrypoint.d/ /docker-entrypoint.d/
 
 CMD ["sudo", "/home/developer/entrypoint.sh"]
 

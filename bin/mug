@@ -65,7 +65,14 @@ elif [ "$module" == "backend-java" ]; then
 fi
 
 volumes="-v $cwd:/home/developer/$project_name $volumes"
-echo "Running $project_name in $cwd as ${repo}mug-$module$version [ volumes = $volumes , ports = $ports]"
 
-docker run $ports $volumes --rm -ti ${repo}mug-$module$version
+mug_data=$(docker ps -f status=running|grep mug-data| wc -l)
+
+if [ $mug_data -eq 1 ]; then
+	volumes_from="--volumes-from mug-data"
+fi
+
+echo "Running $project_name in $cwd as ${repo}mug-$module$version [ volumes = $volumes , ports = $ports, volumes-from = $volumes_from]"
+
+docker run $ports $volumes $volumes_from --rm -ti ${repo}mug-$module$version
 
