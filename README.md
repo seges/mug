@@ -47,7 +47,7 @@ It is possible to define some project or workbench common parameters not include
 
 | Parameter | Description
 | --------- | ---------------
-| mug_data  | Specifies mug data container to be run for every mug execution if it is not already running. See [Custom project/workbench data][#custom-projectworkbench-data].
+| mug_data  | Specifies mug data container to be run for every mug execution if it is not already running. See [Custom project/workbench data](#custom-projectworkbench-data).
 
 ## Custom project/workbench data
 
