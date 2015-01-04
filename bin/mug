@@ -1,8 +1,8 @@
 #!/bin/bash
 
 cwd=$(pwd)
+workdir=$(dirname $0)
 
-repo="seges/"
 
 function getJsonVal() { 
    if [ \( $# -ne 1 \) -o \( -t 0 \) ]; then
@@ -21,18 +21,18 @@ function getXmlVal() {
 function resolve_module
 {
 	if [ -f $cwd/package.json ]; then
-		module="frontend-javascript"
+		module="seges/mug-frontend-javascript"
 		project_name=$(cat $cwd/package.json | getJsonVal "['name']" | sed -e 's/^"//'  -e 's/"$//')
 	elif [ -f $cwd/build.sbt ]; then
-		module="backend-scala"
+		module="seges/mug-backend-scala"
 		project_name=$(cat $cwd/build.sbt | grep "name" | sed 's/.*"\([^"]*\)"/\1/')
 	elif [ -f $cwd/pom.xml ]; then
-		module="backend-java"
+		module="seges/mug-backend-java"
 		project_name=$(cat $cwd/pom.xml | getXmlVal )
 	fi
 }
 
-while getopts "m:v:" opt; do
+while getopts "hm:v:" opt; do
 	case $opt in
 		m)
 			module=$OPTARG
@@ -41,11 +41,18 @@ while getopts "m:v:" opt; do
 		v)
 			version=":$OPTARG"
 			;;
-                \?)
-			echo "help"
+                h)
+			echo "$(basename $0) [OPTION]..."
+			echo ""
+			echo "-m <module> Explicit name of the module in the format [repository/][org/]image"
+			echo "-v <version> Version of the module image to be used"
+			echo "-h This help"
 			exit 42
 	esac
 done
+
+
+[ -f $HOME/.mugrc ] && . $HOME/.mugrc && echo "mug local config read"
 
 [ "$module" == "" ] && resolve_module
 
@@ -56,23 +63,37 @@ if [ "$module" == "" ]; then
 fi
 
 
-if [ "$module" == "frontend-javascript" ]; then
+if [ "$module" == "seges/mug-frontend-javascript" ]; then
 	ports="-p 3000:3000"
-elif [ "$module" == "backend-scala" ]; then
+elif [ "$module" == "seges/mug-backend-scala" ]; then
 	volumes="-v $HOME/.ivy2-mug:/home/developer/.ivy2"
-elif [ "$module" == "backend-java" ]; then
+elif [ "$module" == "seges/mug-backend-java" ]; then
 	volumes="-v $HOME/.m2-mug:/home/developer/.m2"
 fi
 
 volumes="-v $cwd:/home/developer/$project_name $volumes"
 
-mug_data=$(docker ps -f status=running|grep mug-data| wc -l)
+mug_data_image=$(docker ps -f status=running|grep mug-data| wc -l)
 
-if [ $mug_data -eq 1 ]; then
+if [ $mug_data_image -eq 1 ]; then
+	echo "Using existing mug data image"
 	volumes_from="--volumes-from mug-data"
+elif [ ! "$mug_data" == "" ]; then
+	echo "Going to start configured mug data image"
+	volumes_from="--volumes-from mug-data"
+	mug_data_cmd="$workdir/mug-data"
 fi
 
-echo "Running $project_name in $cwd as ${repo}mug-$module$version [ volumes = $volumes , ports = $ports, volumes-from = $volumes_from]"
 
-docker run $ports $volumes $volumes_from --rm -ti ${repo}mug-$module$version
+echo "workdir $workdir"
+
+echo "Running $project_name in $cwd as $module$version [ volumes = $volumes , ports = $ports, volumes-from = $volumes_from, $mug_data]"
+
+docker_cmd="docker run $ports $volumes $volumes_from --rm -ti $module$version"
+
+if [ "$mug_data_cmd" == "" ]; then
+	$docker_cmd
+else
+	$mug_data_cmd && $docker_cmd
+fi
 

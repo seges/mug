@@ -5,6 +5,12 @@ Mug development workbench
 
 Mug helps you not to install your development workbench. It should always be easy as drinking from a mug ;)
 
+# Requirements
+
+* bash
+* curl
+* python
+
 # Install
 
 ```
@@ -35,14 +41,24 @@ Where **module** is one of:
 * backend-scala
 * frontend-javascript
 
+## Configuration
+
+It is possible to define some project or workbench common parameters not included in the main code of mug to keep it reusable. You can create **.mugrc** file in your **home** directory with following possible values:
+
+| Parameter | Description
+-------------------------
+| mug_data  | Specifies mug data container to be run for every mug execution if it is not already running. See [Custom project/workbench data][].
+
 ## Custom project/workbench data
 
-It is possible to add project or workbench specific data into the image by providing Docker container with specific name **mug-data**. If such container exists, *mug* will include it as "volumes-from".
+Imagine the situation you need to provide project or company specific data, e.g. default "settings.xml" in Maven repository or common configuration file for git. But such data is specific to the project or the company. In order not to modify the module image each time and have it generic, you should follow the Docker's pattern of data containers.
 
-You have to run the data container, e.g.:
+It is possible to add project or workbench specific data into the module image by providing additional Docker container with specific name **mug-data**. If such container exists, *mug* will include it as "volumes-from". If it is specified in the mug configuration parameter **mug_data**, it will be automatically started if it is not runnig.
+
+There is a short-cut to run the data container manually for whatever reason:
 
 ```
-docker run --rm --name="mug-data" -ti acme/mug-data /bin/sh
+mug-data acme/mug-data
 ```
 
 ## Runtime initialization
