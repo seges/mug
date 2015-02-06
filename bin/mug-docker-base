@@ -1,0 +1,17 @@
+#!/bin/bash
+
+workdir=$(dirname $0)
+
+if [ $# -ne 2 ]; then
+	echo "$(basename $0) <start|stop|restart> <ip>"
+	echo "ip - Provide interface available to others. Its IP will be used"
+	exit 42
+fi
+
+cmd=$1
+IP=$(ifconfig | grep $2 -A1 | tail -n1 | awk '{print $2}' | cut -f2 -d':')
+
+cutlery global-dns docker0
+cutlery discovery $cmd "-advertise $IP -bootstrap"
+cutlery ambassador $cmd
+

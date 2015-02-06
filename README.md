@@ -10,6 +10,7 @@ Mug helps you not to install your development workbench. It should always be eas
 * bash
 * curl
 * python
+* (optional) ![cutlery](https://github.com/seges/cutlery)
 
 # Install
 
@@ -19,14 +20,37 @@ curl https://github.com/seges/mug/raw/master/setup.sh | sudo sh
 
 # Run
 
-## Existing project
+Mug's main purpose is to support your whole development lifecycle and therefore there are multiple options what to work with:
+
+* Setup phase - start default Docker containers supporting your runtime environment - ambassador, discovery, etc...
+* Development phase - jump to development environment and build, compile, etc...
+
+## Setup phase
+
+mug currently supports runtime environment (composition of your application containers, not composition of development containers) utilizing Consul and Ambassador. It is capable of preparing such environment as easy as:
+
+```
+mug docker-base restart wlan0
+```
+
+which:
+
+* sets global DNS for every following container to the one provided by Consul at Docker's bridge interface
+* starts ![Progrium's Ambassador](https://github.com/progrium/ambassadord)
+* starts ![Consul](http://www.consul.io) with ![Registrator](https://github.com/progrium/registrator)
+
+It utilizes ![Cutlery](https://github.com/seges/cutlery) project that contains basic scripts to work with such Docker environment.
+
+## Development phase
+
+### Existing project
 
 ```
 cd <project_dir>
 mug
 ```
 
-## New project
+### New project
 
 When you want to create a new project and you want to utilize the environment:
 
@@ -41,7 +65,7 @@ Where **module** is one of:
 * backend-scala
 * frontend-javascript
 
-## Configuration
+### Configuration
 
 It is possible to define some project or workbench common parameters not included in the main code of mug to keep it reusable. You can create **.mugrc** file in your **home** directory with following possible values:
 
@@ -49,7 +73,7 @@ It is possible to define some project or workbench common parameters not include
 | --------- | ---------------
 | mug_data  | Specifies mug data container to be run for every mug execution if it is not already running. See [Custom project/workbench data](#custom-projectworkbench-data).
 
-## Custom project/workbench data
+### Custom project/workbench data
 
 Imagine the situation you need to provide project or company specific data, e.g. default "settings.xml" in Maven repository or common configuration file for git. But such data is specific to the project or the company. In order not to modify the module image each time and have it generic, you should follow the Docker's pattern of data containers.
 
@@ -61,7 +85,7 @@ There is a short-cut to run the data container manually for whatever reason:
 mug-data acme/mug-data
 ```
 
-## Runtime initialization
+### Runtime initialization
 
 There is a possibility to initialize various aspects of the running environment, e.g. copying some workbench data upon start of the module container. It is strongly dependent on the module image implementation but images already implemented in mug have basic initialization routines.
 

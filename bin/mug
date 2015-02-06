@@ -5,95 +5,122 @@ workdir=$(dirname $0)
 
 
 function getJsonVal() { 
-   if [ \( $# -ne 1 \) -o \( -t 0 \) ]; then
-       echo "Usage: getJsonVal 'key' < /tmp/file";
-       echo "   -- or -- ";
-       echo " cat /tmp/input | getJsonVal 'key'";
-       return;
-   fi;
-   python -c "import json,sys;sys.stdout.write(json.dumps(json.load(sys.stdin)$1))";
+  if [ \( $# -ne 1 \) -o \( -t 0 \) ]; then
+    echo "Usage: getJsonVal 'key' < /tmp/file";
+    echo "   -- or -- ";
+    echo " cat /tmp/input | getJsonVal 'key'";
+    return;
+  fi;
+  python -c "import json,sys;sys.stdout.write(json.dumps(json.load(sys.stdin)$1))";
 }
 
 function getXmlVal() {
-	python -c "import xml.etree.ElementTree as ET;tree = ET.parse('$cwd/pom.xml');root = tree.getroot();print tree.find('./{http://maven.apache.org/POM/4.0.0}artifactId').text"
+  python -c "import xml.etree.ElementTree as ET;tree = ET.parse('$cwd/pom.xml');root = tree.getroot();print tree.find('./{http://maven.apache.org/POM/4.0.0}artifactId').text"
 }
 
 function resolve_module
 {
-	if [ -f $cwd/package.json ]; then
-		module="seges/mug-frontend-javascript"
-		project_name=$(cat $cwd/package.json | getJsonVal "['name']" | sed -e 's/^"//'  -e 's/"$//')
-	elif [ -f $cwd/build.sbt ]; then
-		module="seges/mug-backend-scala"
-		project_name=$(cat $cwd/build.sbt | grep "name" | sed 's/.*"\([^"]*\)"/\1/')
-	elif [ -f $cwd/pom.xml ]; then
-		module="seges/mug-backend-java"
-		project_name=$(cat $cwd/pom.xml | getXmlVal )
-	fi
+  if [ -f $cwd/package.json ]; then
+    module="seges/mug-frontend-javascript"
+    project_name=$(cat $cwd/package.json | getJsonVal "['name']" | sed -e 's/^"//'  -e 's/"$//')
+  elif [ -f $cwd/build.sbt ]; then
+    module="seges/mug-backend-scala"
+    project_name=$(cat $cwd/build.sbt | grep "name" | sed 's/.*"\([^"]*\)"/\1/')
+  elif [ -f $cwd/pom.xml ]; then
+    module="seges/mug-backend-java"
+    project_name=$(cat $cwd/pom.xml | getXmlVal )
+  fi
 }
 
-while getopts "hm:v:" opt; do
-	case $opt in
-		m)
-			module=$OPTARG
-			project_name=$(basename $cwd)
-			;;
-		v)
-			version=":$OPTARG"
-			;;
-                h)
-			echo "$(basename $0) [OPTION]..."
-			echo ""
-			echo "-m <module> Explicit name of the module in the format [repository/][org/]image"
-			echo "-v <version> Version of the module image to be used"
-			echo "-h This help"
-			exit 42
-	esac
+while getopts "hlm:v:" opt; do
+  case $opt in
+    l)
+      docker images | grep mug-
+      exit 0 
+      ;;
+    m)
+      module=$OPTARG
+      project_name=$(basename $cwd)
+      ;;
+    v)
+      version=":$OPTARG"
+      ;;
+    h)
+      echo "$(basename $0) [OPTION] [COMMAND]...
+			
+      -l List mug modules available as Docker images (prepended with 'mug-')
+      -m <module> Explicit name of the module in the format [repository/][org/]image
+      -v <version> Version of the module image to be used
+      -h This help
+
+      COMMAND Optional command for picking different mug functionality, now available are:
+        * docker-base
+
+      == docker-base ==
+
+      Starts local development environment with Ambassador and Consul using Cutlery project ( https://github.com/seges/cutlery )
+      "
+    exit 42
+  esac
 done
 
+# After getopts is done, shift all processed options away with
+shift $((OPTIND-1))
+
+[ "$MUG_HOME" == "" ] && MUG_HOME="/usr/local/mug" && echo "Mug home = $MUG_HOME"
 
 [ -f $HOME/.mugrc ] && . $HOME/.mugrc && echo "mug local config read"
 
-[ "$module" == "" ] && resolve_module
+
+if [ "$1" == "" ]; then
+
+  [ "$module" == "" ] && resolve_module
 
 
-if [ "$module" == "" ]; then
-	echo "I don't think $cwd contains any supported project"
-	exit 42
-fi
+  if [ "$module" == "" ]; then
+    echo "I don't think $cwd contains any supported project"
+    exit 42
+  fi
 
 
-if [ "$module" == "seges/mug-frontend-javascript" ]; then
-	ports="-p 3000:3000"
-elif [ "$module" == "seges/mug-backend-scala" ]; then
-	volumes="-v $HOME/.ivy2-mug:/home/developer/.ivy2"
-elif [ "$module" == "seges/mug-backend-java" ]; then
-	volumes="-v $HOME/.m2-mug:/home/developer/.m2"
-fi
+  if [ "$module" == "seges/mug-frontend-javascript" ]; then
+    ports="-p 3000:3000"
+  elif [ "$module" == "seges/mug-backend-scala" ]; then
+    volumes="-v $HOME/.ivy2-mug:/home/developer/.ivy2"
+  elif [ "$module" == "seges/mug-backend-java" ]; then
+    volumes="-v $HOME/.m2-mug:/home/developer/.m2"
+  fi
 
-volumes="-v $cwd:/home/developer/$project_name $volumes"
+  volumes="-v $cwd:/home/developer/$project_name $volumes"
 
-mug_data_image=$(docker ps -f status=running|grep mug-data| wc -l)
+  mug_data_image=$(docker ps -f status=running|grep mug-data| wc -l)
 
-if [ $mug_data_image -eq 1 ]; then
-	echo "Using existing mug data image"
-	volumes_from="--volumes-from mug-data"
-elif [ ! "$mug_data" == "" ]; then
-	echo "Going to start configured mug data image"
-	volumes_from="--volumes-from mug-data"
-	mug_data_cmd="$workdir/mug-data"
-fi
+  if [ $mug_data_image -eq 1 ]; then
+    echo "Using existing mug data image"
+    volumes_from="--volumes-from mug-data"
+  elif [ ! "$mug_data" == "" ]; then
+    echo "Going to start configured mug data image"
+    volumes_from="--volumes-from mug-data"
+    mug_data_cmd="$workdir/mug-data"
+  fi
 
 
-echo "workdir $workdir"
+  echo "workdir $workdir"
 
-echo "Running $project_name in $cwd as $module$version [ volumes = $volumes , ports = $ports, volumes-from = $volumes_from, $mug_data]"
+  echo "Running $project_name in $cwd as $module$version [ volumes = $volumes , ports = $ports, volumes-from = $volumes_from, $mug_data]"
 
-docker_cmd="docker run $ports $volumes $volumes_from --rm -ti $module$version"
+  docker_cmd="docker run $ports $volumes $volumes_from --rm -ti $module$version"
 
-if [ "$mug_data_cmd" == "" ]; then
-	$docker_cmd
+  if [ "$mug_data_cmd" == "" ]; then
+    $docker_cmd
+  else
+    $mug_data_cmd && $docker_cmd
+  fi
+
 else
-	$mug_data_cmd && $docker_cmd
+  cmd=$1
+  shift
+
+  $MUG_HOME/bin/mug-$cmd $@
 fi
 
