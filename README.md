@@ -67,12 +67,42 @@ Where **module** is one of:
 
 ### Configuration
 
-It is possible to define some project or workbench common parameters not included in the main code of mug to keep it reusable. You can create **.mugrc** file in your **home** directory with following possible values:
+It is possible to define some project or workbench common parameters not included in the main code of mug to keep it reusable. You can create **.mugrc** file in your **home** directory or project workspace with following possible values:
 
 | Parameter | Description
 | --------- | ---------------
 | mug_data  | Specifies mug data container to be run for every mug execution if it is not already running. See [Custom project/workbench data](#custom-projectworkbench-data).
 | versions  | Overrides default (latest) or unspecified versions of images resolved for particular module. It contains space delimited list of named image artifacts: <repository>/<image>:<tag>. Example: ```versions="seges/mug-backend-java:oracle-java7 seges/mug-backend-scala:2.11"```
+
+#### Configuration resolution
+
+mug by default includes the configuration found in your home directory.
+
+In case you have multiple project workspaces with different requirements, e.g. different setup of versions for development containers where projectA requires Java version7 but projectB requires version 8, then you can override it by putting additional **.mugrc** file somewhere up the tree from the current directory, where mug starts.
+
+Advice: it is good to place one .mugrc in root directory of the workspace or set of projects if they are related
+
+Example directory structure:
+
+```
+/home/user
+  |
+  |- .mugrc
+  |
+  |- development
+       |
+       |- project A repo
+       |    |
+       |    |- .mugrc (this is project A specific and will be loaded on top of the home's one)
+       |    |- projectA-api
+       |    |- projectA-server
+       |
+       |- project B repo
+            |
+            |- .mugrc (this is project B specific and will be loaded on top of the home's one)
+            |- projectB-common
+            |- projectB-rest
+```
 
 ### Custom project/workbench data
 
