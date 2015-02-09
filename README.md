@@ -10,7 +10,7 @@ Mug helps you not to install your development workbench. It should always be eas
 * bash
 * curl
 * python
-* (optional) [cutlery](https://github.com/seges/cutlery)
+* (optional) [cutlery](http://seges.github.io/cutlery)
 
 # Install
 
@@ -39,7 +39,7 @@ which:
 * starts [Progrium's Ambassador](https://github.com/progrium/ambassadord)
 * starts [Consul](http://www.consul.io) with [Registrator](https://github.com/progrium/registrator)
 
-It utilizes [Cutlery](https://github.com/seges/cutlery) project that contains basic scripts to work with such Docker environment.
+It utilizes [Cutlery](http://seges.github.io/cutlery) project that contains basic scripts to work with such Docker environment.
 
 ## Development phase
 
