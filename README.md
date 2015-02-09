@@ -72,6 +72,7 @@ It is possible to define some project or workbench common parameters not include
 | Parameter | Description
 | --------- | ---------------
 | mug_data  | Specifies mug data container to be run for every mug execution if it is not already running. See [Custom project/workbench data](#custom-projectworkbench-data).
+| versions  | Overrides default (latest) or unspecified versions of images resolved for particular module. It contains space delimited list of named image artifacts: <repository>/<image>:<tag>. Example: ```versions="seges/mug-backend-java:oracle-java7 seges/mug-backend-scala:2.11"```
 
 ### Custom project/workbench data
 

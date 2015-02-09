@@ -32,6 +32,21 @@ function resolve_module
   fi
 }
 
+function resolve_version
+{
+  local _module="$1"
+  local _version=""
+
+  for version in $versions; do
+    arrIN=(${version//:/ })
+    if [ ${arrIN[0]} == $_module ]; then
+      eval "_version=${arrIN[1]}"
+    fi 
+  done
+
+  echo ":$_version"
+}
+
 while getopts "hlm:v:" opt; do
   case $opt in
     l)
@@ -73,9 +88,9 @@ shift $((OPTIND-1))
 
 
 if [ "$1" == "" ]; then
-
+  
   [ "$module" == "" ] && resolve_module
-
+  [ "$version" == "" ] && version=$(resolve_version $module)
 
   if [ "$module" == "" ]; then
     echo "I don't think $cwd contains any supported project"
