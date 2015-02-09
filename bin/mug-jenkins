@@ -1,0 +1,24 @@
+#!/bin/bash
+
+config_file="$HOME/.mugrc"
+if [ -f $config_file ]; then
+	. $config_file
+else
+	echo "Unable to read Jenkins configuration, it should be present in $config_file"
+	exit 42
+fi
+
+[ "$jenkins_protocol" == "" ] && protocol=http || protocol=$jenkins_protocol
+
+login="$jenkins_user:$jenkins_token"
+host="$protocol://$login@$jenkins_host:$jenkins_port"
+
+crumb=`curl "$host/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,%22:%22,//crumb)"`
+
+url=$1
+file=$2
+
+echo "curl -v -H \"$crumb\" -X POST -d @$file -H \"Content-Type: text/xml\" $host/$url"
+curl -v -H "$crumb" -X POST -d @$file -H "Content-Type: text/xml" $host/$url
+
+
