@@ -39,6 +39,17 @@
 <p>Mug helps you not to install your development workbench. It should always be easy as drinking from a mug ;)</p>
 
 <h1>
+<a id="requirements" class="anchor" href="#requirements" aria-hidden="true"><span class="octicon octicon-link"></span></a>Requirements</h1>
+
+<ul>
+<li>bash</li>
+<li>curl</li>
+<li>python</li>
+<li>(optional) <a href="https://github.com/seges/cutlery">cutlery</a>
+</li>
+</ul>
+
+<h1>
 <a id="install" class="anchor" href="#install" aria-hidden="true"><span class="octicon octicon-link"></span></a>Install</h1>
 
 <pre><code>curl https://github.com/seges/mug/raw/master/setup.sh | sudo sh
@@ -47,28 +58,145 @@
 <h1>
 <a id="run" class="anchor" href="#run" aria-hidden="true"><span class="octicon octicon-link"></span></a>Run</h1>
 
+<p>Mug's main purpose is to support your whole development lifecycle and therefore there are multiple options what to work with:</p>
+
+<ul>
+<li>Setup phase - start default Docker containers supporting your runtime environment - ambassador, discovery, etc...</li>
+<li>Development phase - jump to development environment and build, compile, etc...</li>
+</ul>
+
 <h2>
-<a id="existing-project" class="anchor" href="#existing-project" aria-hidden="true"><span class="octicon octicon-link"></span></a>Existing project</h2>
+<a id="setup-phase" class="anchor" href="#setup-phase" aria-hidden="true"><span class="octicon octicon-link"></span></a>Setup phase</h2>
+
+<p>mug currently supports runtime environment (composition of your application containers, not composition of development containers) utilizing Consul and Ambassador. It is capable of preparing such environment as easy as:</p>
+
+<pre><code>mug docker-base restart wlan0
+</code></pre>
+
+<p>which:</p>
+
+<ul>
+<li>sets global DNS for every following container to the one provided by Consul at Docker's bridge interface</li>
+<li>starts <a href="https://github.com/progrium/ambassadord">Progrium's Ambassador</a>
+</li>
+<li>starts <a href="http://www.consul.io">Consul</a> with <a href="https://github.com/progrium/registrator">Registrator</a>
+</li>
+</ul>
+
+<p>It utilizes <a href="https://github.com/seges/cutlery">Cutlery</a> project that contains basic scripts to work with such Docker environment.</p>
+
+<h2>
+<a id="development-phase" class="anchor" href="#development-phase" aria-hidden="true"><span class="octicon octicon-link"></span></a>Development phase</h2>
+
+<h3>
+<a id="existing-project" class="anchor" href="#existing-project" aria-hidden="true"><span class="octicon octicon-link"></span></a>Existing project</h3>
 
 <pre><code>cd &lt;project_dir&gt;
 mug
 </code></pre>
 
-<h2>
-<a id="new-project" class="anchor" href="#new-project" aria-hidden="true"><span class="octicon octicon-link"></span></a>New project</h2>
+<h3>
+<a id="new-project" class="anchor" href="#new-project" aria-hidden="true"><span class="octicon octicon-link"></span></a>New project</h3>
 
 <p>When you want to create a new project and you want to utilize the environment:</p>
 
 <pre><code>cd &lt;workspace_dir&gt;
-mug &lt;type&gt;
+mug &lt;module&gt;
 </code></pre>
 
-<p>Where <em>type</em> is one of:</p>
+<p>Where <strong>module</strong> is one of:</p>
 
 <ul>
+<li>backend-java</li>
 <li>backend-scala</li>
 <li>frontend-javascript</li>
 </ul>
+
+<h3>
+<a id="configuration" class="anchor" href="#configuration" aria-hidden="true"><span class="octicon octicon-link"></span></a>Configuration</h3>
+
+<p>It is possible to define some project or workbench common parameters not included in the main code of mug to keep it reusable. You can create <strong>.mugrc</strong> file in your <strong>home</strong> directory with following possible values:</p>
+
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>mug_data</td>
+<td>Specifies mug data container to be run for every mug execution if it is not already running. See <a href="#custom-projectworkbench-data">Custom project/workbench data</a>.</td>
+</tr>
+</tbody>
+</table>
+
+<h3>
+<a id="custom-projectworkbench-data" class="anchor" href="#custom-projectworkbench-data" aria-hidden="true"><span class="octicon octicon-link"></span></a>Custom project/workbench data</h3>
+
+<p>Imagine the situation you need to provide project or company specific data, e.g. default "settings.xml" in Maven repository or common configuration file for git. But such data is specific to the project or the company. In order not to modify the module image each time and have it generic, you should follow the Docker's pattern of data containers.</p>
+
+<p>It is possible to add project or workbench specific data into the module image by providing additional Docker container with specific name <strong>mug-data</strong>. If such container exists, <em>mug</em> will include it as "volumes-from". If it is specified in the mug configuration parameter <strong>mug_data</strong>, it will be automatically started if it is not runnig.</p>
+
+<p>There is a short-cut to run the data container manually for whatever reason:</p>
+
+<pre><code>mug-data acme/mug-data
+</code></pre>
+
+<h3>
+<a id="runtime-initialization" class="anchor" href="#runtime-initialization" aria-hidden="true"><span class="octicon octicon-link"></span></a>Runtime initialization</h3>
+
+<p>There is a possibility to initialize various aspects of the running environment, e.g. copying some workbench data upon start of the module container. It is strongly dependent on the module image implementation but images already implemented in mug have basic initialization routines.</p>
+
+<p>Data that should be provided is usually contained either in:</p>
+
+<ul>
+<li>module image's directory</li>
+<li>mug-data image</li>
+</ul>
+
+<p>If you want to know more about the support for initialization in provided modules, take a look in the appropriate documentation of the module. In case you want to utilize the support in mug, you have to:</p>
+
+<ul>
+<li>copy <code>entrypoint.sh</code> to your Docker context</li>
+<li>create <code>docker-entrypoint.d</code> and include all initialization scripts inside</li>
+<li>put following lines in Dockerfile:</li>
+</ul>
+
+<pre><code>ADD entrypoint.sh /home/developer/
+ADD docker-entrypoint.d/ /docker-entrypoint.d/
+
+CMD ["sudo", "/home/developer/entrypoint.sh"]
+</code></pre>
+
+<h1>
+<a id="modules" class="anchor" href="#modules" aria-hidden="true"><span class="octicon octicon-link"></span></a>Modules</h1>
+
+<h2>
+<a id="backend-java" class="anchor" href="#backend-java" aria-hidden="true"><span class="octicon octicon-link"></span></a>backend-java</h2>
+
+<p>Copies /home/developer/home-init.d into /home/developer and /home/developer/.m2.tmpl into /home/developer/.m2/repository</p>
+
+<h2>
+<a id="backend-scala" class="anchor" href="#backend-scala" aria-hidden="true"><span class="octicon octicon-link"></span></a>backend-scala</h2>
+
+<p>Copies ivy cached dependencies</p>
+
+<h2>
+<a id="frontend-javascript" class="anchor" href="#frontend-javascript" aria-hidden="true"><span class="octicon octicon-link"></span></a>frontend-javascript</h2>
+
+<h1>
+<a id="development" class="anchor" href="#development" aria-hidden="true"><span class="octicon octicon-link"></span></a>Development</h1>
+
+<ul>
+<li>implement a Docker image inside "docker" directory</li>
+<li>extend <code>bin/mug</code> script in order to properly identify the project</li>
+<li>add initialization scripts in /docker-entrypoint.d using ADD or COPY
+** use <code>entrypoint.sh</code> as your main command</li>
+</ul>
+
+<p>Use <code>docker-build.sh</code> and <code>docker-push.sh</code> commands to prepare images.</p>
       </section>
     </div>
 
