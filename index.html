@@ -45,7 +45,7 @@
 <li>bash</li>
 <li>curl</li>
 <li>python</li>
-<li>(optional) <a href="https://github.com/seges/cutlery">cutlery</a>
+<li>(optional) <a href="http://seges.github.io/cutlery">cutlery</a>
 </li>
 </ul>
 
@@ -83,7 +83,7 @@
 </li>
 </ul>
 
-<p>It utilizes <a href="https://github.com/seges/cutlery">Cutlery</a> project that contains basic scripts to work with such Docker environment.</p>
+<p>It utilizes <a href="http://seges.github.io/cutlery">Cutlery</a> project that contains basic scripts to work with such Docker environment.</p>
 
 <h2>
 <a id="development-phase" class="anchor" href="#development-phase" aria-hidden="true"><span class="octicon octicon-link"></span></a>Development phase</h2>
@@ -115,7 +115,7 @@ mug &lt;module&gt;
 <h3>
 <a id="configuration" class="anchor" href="#configuration" aria-hidden="true"><span class="octicon octicon-link"></span></a>Configuration</h3>
 
-<p>It is possible to define some project or workbench common parameters not included in the main code of mug to keep it reusable. You can create <strong>.mugrc</strong> file in your <strong>home</strong> directory with following possible values:</p>
+<p>It is possible to define some project or workbench common parameters not included in the main code of mug to keep it reusable. You can create <strong>.mugrc</strong> file in your <strong>home</strong> directory or project workspace with following possible values:</p>
 
 <table>
 <thead>
@@ -129,8 +129,43 @@ mug &lt;module&gt;
 <td>mug_data</td>
 <td>Specifies mug data container to be run for every mug execution if it is not already running. See <a href="#custom-projectworkbench-data">Custom project/workbench data</a>.</td>
 </tr>
+<tr>
+<td>versions</td>
+<td>Overrides default (latest) or unspecified versions of images resolved for particular module. It contains space delimited list of named image artifacts: /:. Example: <code>versions="seges/mug-backend-java:oracle-java7 seges/mug-backend-scala:2.11"</code>
+</td>
+</tr>
 </tbody>
 </table>
+
+<h4>
+<a id="configuration-resolution" class="anchor" href="#configuration-resolution" aria-hidden="true"><span class="octicon octicon-link"></span></a>Configuration resolution</h4>
+
+<p>mug by default includes the configuration found in your home directory.</p>
+
+<p>In case you have multiple project workspaces with different requirements, e.g. different setup of versions for development containers where projectA requires Java version7 but projectB requires version 8, then you can override it by putting additional <strong>.mugrc</strong> file somewhere up the tree from the current directory, where mug starts.</p>
+
+<p>Advice: it is good to place one .mugrc in root directory of the workspace or set of projects if they are related</p>
+
+<p>Example directory structure:</p>
+
+<pre><code>/home/user
+  |
+  |- .mugrc
+  |
+  |- development
+       |
+       |- project A repo
+       |    |
+       |    |- .mugrc (this is project A specific and will be loaded on top of the home's one)
+       |    |- projectA-api
+       |    |- projectA-server
+       |
+       |- project B repo
+            |
+            |- .mugrc (this is project B specific and will be loaded on top of the home's one)
+            |- projectB-common
+            |- projectB-rest
+</code></pre>
 
 <h3>
 <a id="custom-projectworkbench-data" class="anchor" href="#custom-projectworkbench-data" aria-hidden="true"><span class="octicon octicon-link"></span></a>Custom project/workbench data</h3>
