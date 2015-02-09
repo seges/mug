@@ -1,0 +1,28 @@
+#!/bin/bash
+
+
+if [ $# -ne 1 ]; then
+	[ -f $HOME/.mugrc ] && . $HOME/.mugrc
+
+	if [ "$mug_data" == "" ]; then
+		echo "Missing data container name. Please provide it either as the argument or within .mugrc"
+		echo ""
+		echo "Usage:"
+		echo ""
+		echo "$(basename $0) data_container_name"
+		exit 42
+	fi
+else
+	mug_data=$1
+fi
+
+mug_data_image=$(docker ps -f status=running|grep "$mug_data"| wc -l)
+
+if [ $mug_data_image -eq 1 ]; then
+	echo "[mug-data] Data container running. Continuing..."
+	exit 0
+fi
+
+docker run -d --name="mug-data" -ti $mug_data /bin/sh
+echo "[mug-data] Data container $mug_data started"
+

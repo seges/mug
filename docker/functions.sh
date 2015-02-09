@@ -5,7 +5,7 @@ function all_modules {
 
 function usage {
 	echo -e "\e[1mUsage:\e[0m"
-	echo "$(basename $0) <module>"
+	echo "$(basename $0) <module> [<version>]"
 	echo ""
 	echo -e "\e[1mAvailable modules:\e[0m"
 	local modules=$(all_modules)
@@ -22,4 +22,27 @@ function get_modules {
 	fi
 
 	echo "$modules"
+}
+
+function get_version {
+	module=$1
+	potential_version=$2
+
+	if [ "$module" == "all" ]; then
+		echo "Not implemented"
+		exit 42
+	fi
+	
+	if [ ! -f $module/Dockerfile ]; then
+		if [ "$potential_version" == "" ]; then
+			echo "Please specify version of the module to be built"
+			echo ""
+			usage
+			exit 42
+		fi
+
+		echo "$potential_version"
+	else
+		echo ""
+	fi
 }

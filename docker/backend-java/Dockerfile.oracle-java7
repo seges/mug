@@ -1,4 +1,4 @@
-FROM dockerfile/java:oracle-java8
+FROM dockerfile/java:oracle-java7
 
 RUN useradd -m -s /bin/bash developer
 
@@ -29,7 +29,8 @@ RUN mv /home/developer/.m2 /home/developer/.m2.tmpl
 
 RUN echo ". /home/developer/.alias" >> /home/developer/.bashrc
 
-ADD init.sh /home/developer/
+ADD entrypoint.sh /home/developer/
+ADD docker-entrypoint.d/ /docker-entrypoint.d/
 
-CMD ["sudo", "/home/developer/init.sh"]
+CMD ["sudo", "/home/developer/entrypoint.sh"]
 
