@@ -120,6 +120,7 @@ if [ "$1" == "" ]; then
     ports="-p 3000:3000"
   elif [ "$module" == "seges/mug-backend-scala" ]; then
     volumes="-v $HOME/.ivy2-mug:/home/developer/.ivy2"
+    volumes="$volumes -v $HOME/.m2-mug:/home/developer/.m2"
   elif [ "$module" == "seges/mug-backend-java" ]; then
     volumes="-v $HOME/.m2-mug:/home/developer/.m2"
   fi
