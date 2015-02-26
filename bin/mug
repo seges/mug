@@ -125,7 +125,7 @@ if [ "$1" == "" ]; then
     volumes="-v $HOME/.m2-mug:/home/developer/.m2"
   fi
 
-  volumes="-v $cwd:/home/developer/$project_name $volumes"
+  volumes="-v $HOME/.gnupg:/home/developer/.gnupg -v $HOME/.ssh:/home/developer/.ssh -v $cwd:/home/developer/$project_name $volumes"
 
   mug_data_image=$(docker ps -f status=running|grep mug-data| wc -l)
 
