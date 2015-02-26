@@ -4,7 +4,7 @@ workdir=$(dirname $0)
 
 . $workdir/functions.sh
 
-if [ $# -ne 1 ]; then
+if [ $# -lt 1 ]; then
 	echo "Which module do you want to push?"
 	echo ""
 	usage
@@ -19,10 +19,10 @@ for module in $modules; do
 	echo -e "\e[1m**** Tagging and pushing module $module:$version\e[0m"
 
 	if [ "$version" == "" ]; then
-		docker tag mug-$module seges/mug-$module
+		#docker tag mug-$module seges/mug-$module
 		docker push seges/mug-$module
 	else
-		docker tag mug-$module seges/mug-$module:$version
+		#docker tag seges/mug-$module seges/mug-$module:$version
 		docker push seges/mug-$module:$version
 	fi
 	echo -e "\e[1m**** Finished tagging and pushing module $module\e[0m"
