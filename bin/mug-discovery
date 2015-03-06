@@ -1,0 +1,5 @@
+#!/bin/bash
+
+URL="http://localhost:8500"
+[[ -x $BROWSER ]] && exec "$BROWSER" "$URL"
+path=$(which xdg-open || which gnome-open) && exec "$path" "$URL"

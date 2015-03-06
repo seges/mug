@@ -1,0 +1,19 @@
+#!/bin/bash
+
+workdir=$(dirname $0)
+
+if [ $# -ne 1 ]; then
+	echo "$(basename $0) <images|ps>"
+	exit 42
+fi
+
+if [ "$1" == "images" ]; then
+	for img in $(docker images --filter="dangling=true" -q); do
+		docker rmi $img
+	done
+elif [ "$1" == "ps" ]; then
+	for ps in $(docker ps -aq); do
+		docker rm $ps
+	done
+fi
+
