@@ -135,6 +135,21 @@ ADD docker-entrypoint.d/ /docker-entrypoint.d/
 CMD ["sudo", "/home/developer/entrypoint.sh"]
 ```
 
+# Helpers
+
+## Discovery
+
+Open the UI for service discovery
+
+```
+mug discovery
+```
+
+## Docker
+
+| Clean stale images | ```mug clean images```
+| Clean stale containers | ```mug clean ps```
+
 # Modules
 
 ## backend-java

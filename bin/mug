@@ -87,11 +87,32 @@ while getopts "hlm:v:" opt; do
       -h This help
 
       COMMAND Optional command for picking different mug functionality, now available are:
+        * clean
+        * discovery
         * docker-base
+
+      == clean ==
+
+      Removes either stale images or containers by entering:
+        * ps
+        * images
+
+      == discovery ==
+
+      Opens a browser with Consul UI
 
       == docker-base ==
 
       Starts local development environment with Ambassador and Consul using Cutlery project ( https://github.com/seges/cutlery )
+
+      Format: docker-base <action> [<interface>]
+
+      Action is one of:
+        * start
+        * stop
+        * restart
+
+      Interface name is important in start and restart commands.
       "
     exit 42
   esac
