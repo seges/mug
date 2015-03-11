@@ -69,10 +69,11 @@ Where **module** is one of:
 
 It is possible to define some project or workbench common parameters not included in the main code of mug to keep it reusable. You can create **.mugrc** file in your **home** directory or project workspace with following possible values:
 
-| Parameter | Description
-| --------- | ---------------
-| mug_data  | Specifies mug data container to be run for every mug execution if it is not already running. See [Custom project/workbench data](#custom-projectworkbench-data).
-| versions  | Overrides default (latest) or unspecified versions of images resolved for particular module. It contains space delimited list of named image artifacts: <repository>/<image>:<tag>. Example: ```versions="seges/mug-backend-java:oracle-java7 seges/mug-backend-scala:2.11"```
+| Parameter               | Description
+| ----------------------- | ---------------
+| mug_data                | Specifies mug data container to be run for every mug execution if it is not already running. See [Custom project/workbench data](#custom-projectworkbench-data).
+| versions                | Overrides default (latest) or unspecified versions of images resolved for particular module. It contains space delimited list of named image artifacts: <repository>/<image>:<tag>. Example: ```versions="seges/mug-backend-java:oracle-java7 seges/mug-backend-scala:2.11"```
+| eclipse_development_dir | Overrides default (/home/<user>/development) directory where workspace and source code is, so it is available to Eclipse
 
 #### Configuration resolution
 
@@ -134,6 +135,14 @@ ADD docker-entrypoint.d/ /docker-entrypoint.d/
 
 CMD ["sudo", "/home/developer/entrypoint.sh"]
 ```
+
+## IDEs
+
+Mug is capable of running your favourite IDEs:
+
+* Eclipse
+
+connected to your local workspace. It mounts ```/home/<user>/development``` directory by default to the container's environment into ```/home/developer/development```. It can be overriden by Mug configuration.
 
 # Helpers
 
