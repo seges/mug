@@ -1,0 +1,51 @@
+#!/bin/bash
+
+workdir=$(dirname $0)
+
+. $workdir/functions.sh
+
+resolve_mugrc
+
+if [ ! -n "$development_dir" ]; then
+  development_dir="$HOME/development"
+fi
+
+volumes="$volumes -v $development_dir:/home/developer/development"
+
+echo "[IDE] Development dir = $development_dir"
+
+[[ -n "$idea_variant" ]] && idea_version_variant="-$idea_variant"
+idea_version="v14.0.3$idea_version_variant"
+
+echo "[idea] version = $idea_version"
+docker images|grep fgrehm/intellij-idea|grep $idea_version
+if [ $? == 1 ]; then
+	pwd=$(pwd)
+	cd $development_dir
+	if [ -d docker-intellij ]; then
+		cd docker-intellij
+		git pull
+	else
+		#git clone https://github.com/fgrehm/docker-intellij.git
+		git clone https://github.com/seges/docker-intellij.git
+		cd docker-intellij
+	fi
+
+	if [ -n "$idea_variant" ]; then
+		./build.$idea_variant
+	else
+		./build
+	fi
+fi
+
+#           -v $HOME/.IntelliJIdea14-docker:/home/developer/.IntelliJIdea14 \
+docker run -ti --rm \
+           -e DISPLAY=$DISPLAY \
+           -v /tmp/.X11-unix:/tmp/.X11-unix \
+           -v `pwd`:/workspace \
+           -v $HOME/.m2-mug:/home/developer/.m2 \
+           -v $HOME/.ivy2-mug:/home/developer/.ivy2 \
+           -v $HOME/opt/jdk7:/home/developer/opt/jdk7 \
+           $volumes \
+           fgrehm/intellij-idea:$idea_version
+

@@ -73,7 +73,8 @@ It is possible to define some project or workbench common parameters not include
 | ----------------------- | ---------------
 | mug_data                | Specifies mug data container to be run for every mug execution if it is not already running. See [Custom project/workbench data](#custom-projectworkbench-data).
 | versions                | Overrides default (latest) or unspecified versions of images resolved for particular module. It contains space delimited list of named image artifacts: <repository>/<image>:<tag>. Example: ```versions="seges/mug-backend-java:oracle-java7 seges/mug-backend-scala:2.11"```
-| eclipse_development_dir | Overrides default (/home/host_user/development) directory where workspace and source code is, so it is available to Eclipse
+| development_dir         | Overrides default (/home/host_user/development) directory where workspace and source code is, so it is available to one of IDEs
+| idea_variant            | Currently if set to "IU", it will use IntelliJ Idea Ultimate Trial. If not set, Community Edition will be used
 
 #### Configuration resolution
 
@@ -141,6 +142,7 @@ CMD ["sudo", "/home/developer/entrypoint.sh"]
 Mug is capable of running your favourite IDEs:
 
 * Eclipse - ```mug eclipse```
+* IntelliJ Idea - ```mug idea```, by default Community Edition is run, see *idea_variant* configuration option
 
 connected to your local workspace. It mounts ```/home/<user>/development``` directory by default to the container's environment into ```/home/developer/development```. It can be overriden by Mug configuration.
 

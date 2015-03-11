@@ -3,6 +3,7 @@
 cwd=$(pwd)
 workdir=$(dirname $0)
 
+. $workdir/functions.sh
 
 function getJsonVal() { 
   if [ \( $# -ne 1 \) -o \( -t 0 \) ]; then
@@ -18,23 +19,6 @@ function getXmlVal() {
   python -c "import xml.etree.ElementTree as ET;tree = ET.parse('$cwd/pom.xml');root = tree.getroot();print tree.find('./{http://maven.apache.org/POM/4.0.0}artifactId').text"
 }
 
-function resolve_mugrc
-{
-  [ -f $HOME/.mugrc ] && . $HOME/.mugrc && echo "mug local config read"
-
-  local cwd=`pwd`
-  local _ret=""
-
-  while [ "$cwd" != "/" ] ; do 
-    _ret=$(find "$cwd" -maxdepth 1 -name ".mugrc")
-    if [ ! "$_ret" == "" ]; then
-      . $_ret
-      break
-    fi
-    cwd=`dirname "$cwd"`
-  done
-
-}
 
 function resolve_module
 {

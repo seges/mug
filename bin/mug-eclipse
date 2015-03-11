@@ -1,10 +1,18 @@
 #!/bin/bash
 
-if [ -n "$eclipse_development_dir" ]; then
-  volumes="$volumes -v $eclipse_development_dir:/home/developer/development"
-else
-  volumes="$volumes -v $HOME/development:/home/developer/development"
+workdir=$(dirname $0)
+
+. $workdir/functions.sh
+
+resolve_mugrc
+
+if [ ! -n "$development_dir" ]; then
+  development_dir="$HOME/development"
 fi
+
+volumes="$volumes -v $development_dir:/home/developer/development"
+
+echo "[IDE] Development dir = $development_dir"
 
 docker run -ti --rm \
            -e DISPLAY=$DISPLAY \
