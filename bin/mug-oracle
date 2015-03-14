@@ -1,0 +1,6 @@
+#!/bin/bash
+docker run -d --name oraclexedev \
+           -p 49160:22 \
+           -p 49161:1521 \
+           -e SERVICE_1521_NAME=oracle-dev \
+           -t wnameless/oracle-xe-11g

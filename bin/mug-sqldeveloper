@@ -1,0 +1,10 @@
+#!/bin/bash
+
+sudo xhost +
+docker stop oraclesqldeveloper
+docker rm oraclesqldeveloper
+docker run -d --name oraclesqldeveloper \
+           -e DISPLAY=$DISPLAY \
+           -v /tmp/.X11-unix:/tmp/.X11-unix \
+           -v $HOME/.sqldeveloper-docker/data:/data \
+           -t guywithnose/sqldeveloper
