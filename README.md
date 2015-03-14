@@ -146,6 +146,13 @@ Mug is capable of running your favourite IDEs:
 
 connected to your local workspace. It mounts ```/home/<user>/development``` directory by default to the container's environment into ```/home/developer/development```. It can be overriden by Mug configuration.
 
+## Developer tools
+
+| Command | Tool name |
+| ------- | --------- |
+| oracle  | Oracle XE database |
+| sqldeveloper | Oracle SQL Developer |
+
 # Helpers
 
 ## Discovery
