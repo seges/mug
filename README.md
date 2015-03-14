@@ -148,10 +148,10 @@ connected to your local workspace. It mounts ```/home/<user>/development``` dire
 
 ## Developer tools
 
-| Command | Tool name |
-| ------- | --------- |
-| oracle  | Oracle XE database |
-| sqldeveloper | Oracle SQL Developer |
+| Command      | Tool name |
+| ------------ | --------- |
+| oracle       | Oracle XE database. Registered service *oracle-dev.service.consul*, 49161 port for DB connection. More on [wnameless github](https://github.com/wnameless/docker-oracle-xe-11g). |
+| sqldeveloper | Oracle SQL Developer. More on [guywithnose Docker hub](https://registry.hub.docker.com/u/guywithnose/sqldeveloper) |
 
 # Helpers
 
@@ -165,8 +165,10 @@ mug discovery
 
 ## Docker
 
-| Clean stale images | ```mug clean images```
-| Clean stale containers | ```mug clean ps```
+| Action                 | Command                |
+| ---------------------- | ---------------------- |
+| Clean stale images     | ```mug clean images``` |
+| Clean stale containers | ```mug clean ps```     |
 
 # Modules
 
