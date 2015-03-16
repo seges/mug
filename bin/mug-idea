@@ -18,6 +18,7 @@ echo "[IDE] Development dir = $development_dir"
 idea_version="v14.0.3$idea_version_variant"
 
 echo "[idea] version = $idea_version"
+sudo xhost + 
 docker images|grep fgrehm/intellij-idea|grep $idea_version
 if [ $? == 1 ]; then
 	pwd=$(pwd)
@@ -38,8 +39,14 @@ if [ $? == 1 ]; then
 	fi
 fi
 
-#           -v $HOME/.IntelliJIdea14-docker:/home/developer/.IntelliJIdea14 \
-docker run -ti --rm \
+
+docker ps -a|grep mugintellij
+
+if [ "$?" -eq 0 ]; then
+  docker start mugintellij
+else
+  #           -v $HOME/.IntelliJIdea14-docker:/home/developer/.IntelliJIdea14 \
+  docker run -d --name mugintellij \
            -e DISPLAY=$DISPLAY \
            -v /tmp/.X11-unix:/tmp/.X11-unix \
            -v `pwd`:/workspace \
@@ -47,5 +54,6 @@ docker run -ti --rm \
            -v $HOME/.ivy2-mug:/home/developer/.ivy2 \
            -v $HOME/opt/jdk7:/home/developer/opt/jdk7 \
            $volumes \
-           fgrehm/intellij-idea:$idea_version
+           -t fgrehm/intellij-idea:$idea_version
+fi
 

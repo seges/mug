@@ -1,10 +1,17 @@
 #!/bin/bash
 
 sudo xhost +
-docker stop oraclesqldeveloper
-docker rm oraclesqldeveloper
-docker run -d --name oraclesqldeveloper \
+#docker stop oraclesqldeveloper
+#docker rm oraclesqldeveloper
+
+docker ps -a|grep oraclesqldeveloper
+
+if [ "$?" -eq 0 ]; then
+  docker start oraclesqldeveloper
+else
+  docker run -d --name oraclesqldeveloper \
            -e DISPLAY=$DISPLAY \
            -v /tmp/.X11-unix:/tmp/.X11-unix \
-           -v $HOME/.sqldeveloper-docker/data:/data \
+           -v $HOME/.mug/volumes/oraclesqldeveloper/data:/data \
            -t guywithnose/sqldeveloper
+fi

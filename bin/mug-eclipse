@@ -14,13 +14,22 @@ volumes="$volumes -v $development_dir:/home/developer/development"
 
 echo "[IDE] Development dir = $development_dir"
 
-docker run -ti --rm \
+sudo xhost + 
+
+docker ps -a|grep mugeclipse
+
+if [ "$?" -eq 0 ]; then
+  docker start mugeclipse
+else
+  docker run -d --name mugeclipse \
            -e DISPLAY=$DISPLAY \
            -v /tmp/.X11-unix:/tmp/.X11-unix \
            -v `pwd`:/workspace \
-           -v $HOME/.eclipse-docker:/home/developer/.eclipse \
+           -v $HOME/.mug/volumes/eclipse/.eclipse:/home/developer/.eclipse \
            -v $HOME/.m2-mug:/home/developer/.m2 \
            -v $HOME/.ivy2-mug:/home/developer/.ivy2 \
            -v $HOME/opt/jdk7:/home/developer/opt/jdk7 \
            $volumes \
-           fgrehm/eclipse:v4.4.1
+           -t fgrehm/eclipse:v4.4.1
+fi
+
