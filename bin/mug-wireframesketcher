@@ -1,0 +1,31 @@
+#!/bin/bash
+
+workdir=$(dirname $0)
+
+. $workdir/functions.sh
+
+resolve_mugrc
+
+if [ ! -n "$development_dir" ]; then
+  development_dir="$HOME/development"
+fi
+
+volumes="$volumes -v $development_dir:/home/developer/development"
+
+echo "[IDE] Development dir = $development_dir"
+
+sudo xhost + 
+
+docker ps -a|grep mugwireframesketcher
+
+if [ "$?" -eq 0 ]; then
+  docker start mugwireframesketcher
+else
+  docker run -d --name mugwireframesketcher \
+           -e DISPLAY=$DISPLAY \
+           -v /tmp/.X11-unix:/tmp/.X11-unix \
+           -v `pwd`:/workspace \
+           $volumes \
+           -t seges/mug-wireframesketcher
+fi
+
