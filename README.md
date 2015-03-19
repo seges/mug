@@ -5,6 +5,8 @@ Mug development workbench
 
 Mug helps you not to install your development workbench. It should always be easy as drinking from a mug ;)
 
+It allows you to work in the same environment as it would be on the server in addition with development tools being run in Docker containers as well. You don't have to mess with /etc/hosts file because DNS is included and connected to service registry.
+
 # Requirements
 
 * bash
@@ -137,19 +139,24 @@ ADD docker-entrypoint.d/ /docker-entrypoint.d/
 CMD ["sudo", "/home/developer/entrypoint.sh"]
 ```
 
-## IDEs
+## Developer tools
+
+Execute it via:
+```mug <tool command>```
+
+### IDEs
 
 Mug is capable of running your favourite IDEs:
 
-* Eclipse - ```mug eclipse```
-* IntelliJ Idea - ```mug idea```, by default Community Edition is run, see *idea_variant* configuration option
+| Command      | Tool name |
+| ------------ | --------- |
+| eclipse      | Eclipse IDE - EE version |
+| idea         | IntelliJ Idea - by default Community Edition is run, see *idea_variant* configuration option |
 
 connected to your local workspace. It mounts ```/home/<user>/development``` directory by default to the container's environment into ```/home/developer/development```. It can be overriden by Mug configuration.
 
-## Developer tools
+### Oracle
 
-| Command      | Tool name |
-| ------------ | --------- |
 | oracle       | Oracle XE database. Registered service *oracle-dev.service.consul*, 49161 port for DB connection. More on [wnameless github](https://github.com/wnameless/docker-oracle-xe-11g). |
 | sqldeveloper | Oracle SQL Developer. More on [guywithnose Docker hub](https://registry.hub.docker.com/u/guywithnose/sqldeveloper) |
 
