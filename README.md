@@ -20,6 +20,33 @@ It allows you to work in the same environment as it would be on the server in ad
 curl https://github.com/seges/mug/raw/master/setup.sh | sudo sh
 ```
 
+strongly recommended but still optional, install Cutlery
+
+```
+curl https://github.com/seges/cutlery/raw/master/setup.sh | sudo sh
+```
+
+# Example usage
+
+```
+# prepare environment after start of your computer
+mug docker-base restart wlan0
+
+# fire your favorite IDE, e.g.
+mug eclipse
+# your /home/<user>/development is automatically mapped to /home/developer/development directory in the container
+
+# change some files and try to build it
+cd /home/<user>/development/my-project
+mug
+
+# here we are in 'mug'
+> cd my-project
+# it executes mvn clean install
+> mvnci
+
+```
+
 # Run
 
 Mug's main purpose is to support your whole development lifecycle and therefore there are multiple options what to work with:
