@@ -38,6 +38,8 @@
 
 <p>Mug helps you not to install your development workbench. It should always be easy as drinking from a mug ;)</p>
 
+<p>It allows you to work in the same environment as it would be on the server in addition with development tools being run in Docker containers as well. You don't have to mess with /etc/hosts file because DNS is included and connected to service registry.</p>
+
 <h1>
 <a id="requirements" class="anchor" href="#requirements" aria-hidden="true"><span class="octicon octicon-link"></span></a>Requirements</h1>
 
@@ -52,7 +54,33 @@
 <h1>
 <a id="install" class="anchor" href="#install" aria-hidden="true"><span class="octicon octicon-link"></span></a>Install</h1>
 
-<pre><code>curl https://github.com/seges/mug/raw/master/setup.sh | sudo sh
+<pre><code>curl -L https://github.com/seges/mug/raw/master/setup.sh | sudo sh
+</code></pre>
+
+<p>strongly recommended but still optional, install Cutlery</p>
+
+<pre><code>curl -L https://github.com/seges/cutlery/raw/master/setup.sh | sudo sh
+</code></pre>
+
+<h1>
+<a id="example-usage" class="anchor" href="#example-usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example usage</h1>
+
+<pre><code># prepare environment after start of your computer
+mug docker-base restart wlan0
+
+# fire your favorite IDE, e.g.
+mug eclipse
+# your /home/&lt;user&gt;/development is automatically mapped to /home/developer/development directory in the container
+
+# change some files and try to build it
+cd /home/&lt;user&gt;/development/my-project
+mug
+
+# here we are in 'mug'
+&gt; cd my-project
+# it executes mvn clean install
+&gt; mvnci
+
 </code></pre>
 
 <h1>
@@ -134,6 +162,14 @@ mug &lt;module&gt;
 <td>Overrides default (latest) or unspecified versions of images resolved for particular module. It contains space delimited list of named image artifacts: /:. Example: <code>versions="seges/mug-backend-java:oracle-java7 seges/mug-backend-scala:2.11"</code>
 </td>
 </tr>
+<tr>
+<td>development_dir</td>
+<td>Overrides default (/home/host_user/development) directory where workspace and source code is, so it is available to one of IDEs</td>
+</tr>
+<tr>
+<td>idea_variant</td>
+<td>Currently if set to "IU", it will use IntelliJ Idea Ultimate Trial. If not set, Community Edition will be used</td>
+</tr>
 </tbody>
 </table>
 
@@ -205,6 +241,94 @@ ADD docker-entrypoint.d/ /docker-entrypoint.d/
 CMD ["sudo", "/home/developer/entrypoint.sh"]
 </code></pre>
 
+<h2>
+<a id="developer-tools" class="anchor" href="#developer-tools" aria-hidden="true"><span class="octicon octicon-link"></span></a>Developer tools</h2>
+
+<p>Execute it via:
+<code>mug &lt;tool command&gt;</code></p>
+
+<h3>
+<a id="ides" class="anchor" href="#ides" aria-hidden="true"><span class="octicon octicon-link"></span></a>IDEs</h3>
+
+<p>Mug is capable of running your favourite IDEs:</p>
+
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Tool name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>eclipse</td>
+<td>Eclipse IDE - EE version</td>
+</tr>
+<tr>
+<td>idea</td>
+<td>IntelliJ Idea - by default Community Edition is run, see <em>idea_variant</em> configuration option</td>
+</tr>
+</tbody>
+</table>
+
+<p>connected to your local workspace. It mounts <code>/home/&lt;user&gt;/development</code> directory by default to the container's environment into <code>/home/developer/development</code>. It can be overriden by Mug configuration.</p>
+
+<h3>
+<a id="oracle" class="anchor" href="#oracle" aria-hidden="true"><span class="octicon octicon-link"></span></a>Oracle</h3>
+
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Tool name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>oracle</td>
+<td>Oracle XE database. Registered service <em>oracle-dev.service.consul</em>, 49161 port for DB connection. More on <a href="https://github.com/wnameless/docker-oracle-xe-11g">wnameless github</a>.</td>
+</tr>
+<tr>
+<td>sqldeveloper</td>
+<td>Oracle SQL Developer. More on <a href="https://registry.hub.docker.com/u/guywithnose/sqldeveloper">guywithnose Docker hub</a>
+</td>
+</tr>
+</tbody>
+</table>
+
+<h1>
+<a id="helpers" class="anchor" href="#helpers" aria-hidden="true"><span class="octicon octicon-link"></span></a>Helpers</h1>
+
+<h2>
+<a id="discovery" class="anchor" href="#discovery" aria-hidden="true"><span class="octicon octicon-link"></span></a>Discovery</h2>
+
+<p>Open the UI for service discovery</p>
+
+<pre><code>mug discovery
+</code></pre>
+
+<h2>
+<a id="docker" class="anchor" href="#docker" aria-hidden="true"><span class="octicon octicon-link"></span></a>Docker</h2>
+
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Clean stale images</td>
+<td><code>mug clean images</code></td>
+</tr>
+<tr>
+<td>Clean stale containers</td>
+<td><code>mug clean ps</code></td>
+</tr>
+</tbody>
+</table>
+
 <h1>
 <a id="modules" class="anchor" href="#modules" aria-hidden="true"><span class="octicon octicon-link"></span></a>Modules</h1>
 
@@ -239,7 +363,7 @@ CMD ["sudo", "/home/developer/entrypoint.sh"]
     <div id="footer_wrap" class="outer">
       <footer class="inner">
         <p class="copyright">Mug maintained by <a href="https://github.com/seges">seges</a></p>
-        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
       </footer>
     </div>
 
