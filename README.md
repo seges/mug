@@ -17,13 +17,13 @@ It allows you to work in the same environment as it would be on the server in ad
 # Install
 
 ```
-curl https://github.com/seges/mug/raw/master/setup.sh | sudo sh
+curl -L https://github.com/seges/mug/raw/master/setup.sh | sudo sh
 ```
 
 strongly recommended but still optional, install Cutlery
 
 ```
-curl https://github.com/seges/cutlery/raw/master/setup.sh | sudo sh
+curl -L https://github.com/seges/cutlery/raw/master/setup.sh | sudo sh
 ```
 
 # Example usage
