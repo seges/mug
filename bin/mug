@@ -3,6 +3,7 @@
 cwd=$(pwd)
 workdir=$(dirname $0)
 
+. $workdir/functions.sh
 
 function getJsonVal() { 
   if [ \( $# -ne 1 \) -o \( -t 0 \) ]; then
@@ -18,23 +19,6 @@ function getXmlVal() {
   python -c "import xml.etree.ElementTree as ET;tree = ET.parse('$cwd/pom.xml');root = tree.getroot();print tree.find('./{http://maven.apache.org/POM/4.0.0}artifactId').text"
 }
 
-function resolve_mugrc
-{
-  [ -f $HOME/.mugrc ] && . $HOME/.mugrc && echo "mug local config read"
-
-  local cwd=`pwd`
-  local _ret=""
-
-  while [ "$cwd" != "/" ] ; do 
-    _ret=$(find "$cwd" -maxdepth 1 -name ".mugrc")
-    if [ ! "$_ret" == "" ]; then
-      . $_ret
-      break
-    fi
-    cwd=`dirname "$cwd"`
-  done
-
-}
 
 function resolve_module
 {
@@ -87,11 +71,32 @@ while getopts "hlm:v:" opt; do
       -h This help
 
       COMMAND Optional command for picking different mug functionality, now available are:
+        * clean
+        * discovery
         * docker-base
+
+      == clean ==
+
+      Removes either stale images or containers by entering:
+        * ps
+        * images
+
+      == discovery ==
+
+      Opens a browser with Consul UI
 
       == docker-base ==
 
       Starts local development environment with Ambassador and Consul using Cutlery project ( https://github.com/seges/cutlery )
+
+      Format: docker-base <action> [<interface>]
+
+      Action is one of:
+        * start
+        * stop
+        * restart
+
+      Interface name is important in start and restart commands.
       "
     exit 42
   esac
@@ -120,11 +125,12 @@ if [ "$1" == "" ]; then
     ports="-p 3000:3000"
   elif [ "$module" == "seges/mug-backend-scala" ]; then
     volumes="-v $HOME/.ivy2-mug:/home/developer/.ivy2"
+    volumes="$volumes -v $HOME/.m2-mug:/home/developer/.m2"
   elif [ "$module" == "seges/mug-backend-java" ]; then
     volumes="-v $HOME/.m2-mug:/home/developer/.m2"
   fi
 
-  volumes="-v $cwd:/home/developer/$project_name $volumes"
+  volumes="-v $HOME/.gnupg:/home/developer/.gnupg -v $HOME/.ssh:/home/developer/.ssh -v $cwd:/home/developer/$project_name $volumes"
 
   mug_data_image=$(docker ps -f status=running|grep mug-data| wc -l)
 

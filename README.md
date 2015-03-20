@@ -5,6 +5,8 @@ Mug development workbench
 
 Mug helps you not to install your development workbench. It should always be easy as drinking from a mug ;)
 
+It allows you to work in the same environment as it would be on the server in addition with development tools being run in Docker containers as well. You don't have to mess with /etc/hosts file because DNS is included and connected to service registry.
+
 # Requirements
 
 * bash
@@ -15,7 +17,34 @@ Mug helps you not to install your development workbench. It should always be eas
 # Install
 
 ```
-curl https://github.com/seges/mug/raw/master/setup.sh | sudo sh
+curl -L https://github.com/seges/mug/raw/master/setup.sh | sudo sh
+```
+
+strongly recommended but still optional, install Cutlery
+
+```
+curl -L https://github.com/seges/cutlery/raw/master/setup.sh | sudo sh
+```
+
+# Example usage
+
+```
+# prepare environment after start of your computer
+mug docker-base restart wlan0
+
+# fire your favorite IDE, e.g.
+mug eclipse
+# your /home/<user>/development is automatically mapped to /home/developer/development directory in the container
+
+# change some files and try to build it
+cd /home/<user>/development/my-project
+mug
+
+# here we are in 'mug'
+> cd my-project
+# it executes mvn clean install
+> mvnci
+
 ```
 
 # Run
@@ -69,10 +98,12 @@ Where **module** is one of:
 
 It is possible to define some project or workbench common parameters not included in the main code of mug to keep it reusable. You can create **.mugrc** file in your **home** directory or project workspace with following possible values:
 
-| Parameter | Description
-| --------- | ---------------
-| mug_data  | Specifies mug data container to be run for every mug execution if it is not already running. See [Custom project/workbench data](#custom-projectworkbench-data).
-| versions  | Overrides default (latest) or unspecified versions of images resolved for particular module. It contains space delimited list of named image artifacts: <repository>/<image>:<tag>. Example: ```versions="seges/mug-backend-java:oracle-java7 seges/mug-backend-scala:2.11"```
+| Parameter               | Description
+| ----------------------- | ---------------
+| mug_data                | Specifies mug data container to be run for every mug execution if it is not already running. See [Custom project/workbench data](#custom-projectworkbench-data).
+| versions                | Overrides default (latest) or unspecified versions of images resolved for particular module. It contains space delimited list of named image artifacts: <repository>/<image>:<tag>. Example: ```versions="seges/mug-backend-java:oracle-java7 seges/mug-backend-scala:2.11"```
+| development_dir         | Overrides default (/home/host_user/development) directory where workspace and source code is, so it is available to one of IDEs
+| idea_variant            | Currently if set to "IU", it will use IntelliJ Idea Ultimate Trial. If not set, Community Edition will be used
 
 #### Configuration resolution
 
@@ -134,6 +165,46 @@ ADD docker-entrypoint.d/ /docker-entrypoint.d/
 
 CMD ["sudo", "/home/developer/entrypoint.sh"]
 ```
+
+## Developer tools
+
+Execute it via:
+```mug <tool command>```
+
+### IDEs
+
+Mug is capable of running your favourite IDEs:
+
+| Command      | Tool name |
+| ------------ | --------- |
+| eclipse      | Eclipse IDE - EE version |
+| idea         | IntelliJ Idea - by default Community Edition is run, see *idea_variant* configuration option |
+
+connected to your local workspace. It mounts ```/home/<user>/development``` directory by default to the container's environment into ```/home/developer/development```. It can be overriden by Mug configuration.
+
+### Oracle
+
+| Command      | Tool name |
+| ------------ | --------- |
+| oracle       | Oracle XE database. Registered service *oracle-dev.service.consul*, 49161 port for DB connection. More on [wnameless github](https://github.com/wnameless/docker-oracle-xe-11g). |
+| sqldeveloper | Oracle SQL Developer. More on [guywithnose Docker hub](https://registry.hub.docker.com/u/guywithnose/sqldeveloper) |
+
+# Helpers
+
+## Discovery
+
+Open the UI for service discovery
+
+```
+mug discovery
+```
+
+## Docker
+
+| Action                 | Command                |
+| ---------------------- | ---------------------- |
+| Clean stale images     | ```mug clean images``` |
+| Clean stale containers | ```mug clean ps```     |
 
 # Modules
 

@@ -1,0 +1,16 @@
+#!/bin/bash
+
+docker ps -a|grep oraclexedev
+
+if [ "$?" -eq 0 ]; then
+  docker start oraclexedev
+else
+  docker run -d --name oraclexedev \
+           -p 49160:22 \
+           -p 49161:1521 \
+           -v $HOME/.mug/volumes/oraclexedev/data:/opt/oracledata \
+           -e SERVICE_1521_NAME=oracle-dev \
+           -t wnameless/oracle-xe-11g
+
+  docker exec -ti oraclexedev chown -R oracle /opt/oracledata
+fi
