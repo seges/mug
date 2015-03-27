@@ -15,7 +15,7 @@ volumes="$volumes -v $development_dir:/home/developer/development"
 echo "[IDE] Development dir = $development_dir"
 
 [[ -n "$idea_variant" ]] && idea_version_variant="-$idea_variant"
-idea_version="v14.0.3$idea_version_variant"
+idea_version="v14.1$idea_version_variant"
 
 echo "[idea] version = $idea_version"
 sudo xhost + 
@@ -39,21 +39,21 @@ if [ $? == 1 ]; then
 	fi
 fi
 
+main_volume="$HOME/.mug/volumes/intellij"
+if [ ! -d "$main_volume" ]; then
+  mkdir -p $main_volume
+  chown -R 1000 $main_volume
+fi
 
-docker ps -a|grep mugintellij
-
-if [ "$?" -eq 0 ]; then
-  docker start mugintellij
-else
-  #           -v $HOME/.IntelliJIdea14-docker:/home/developer/.IntelliJIdea14 \
-  docker run -d --name mugintellij \
+docker rm mugintellij
+docker run -d --name mugintellij \
            -e DISPLAY=$DISPLAY \
-           -v /tmp/.X11-unix:/tmp/.X11-unix \
+           $ports $links $environments -v /tmp/.X11-unix:/tmp/.X11-unix \
            -v `pwd`:/workspace \
            -v $HOME/.m2-mug:/home/developer/.m2 \
            -v $HOME/.ivy2-mug:/home/developer/.ivy2 \
            -v $HOME/opt/jdk7:/home/developer/opt/jdk7 \
+           -v $main_volume/.IntelliJIdea14:/home/developer/.IntelliJIdea14 \
            $volumes \
            -t fgrehm/intellij-idea:$idea_version
-fi
 
