@@ -5,7 +5,7 @@ RUN useradd -m -s /bin/bash developer
 RUN apt-get update && apt-get install -y mc
 RUN apt-get install git-flow
 
-RUN npm install -g gulp webpack webpack-dev-server
+RUN npm install -g gulp webpack webpack-dev-server bower
 RUN npm install -g rx
 
 RUN export uid=1000 gid=1000 && \
