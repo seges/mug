@@ -50,9 +50,9 @@ docker run -d --name mugintellij \
            -e DISPLAY=$DISPLAY \
            $ports $links $environments -v /tmp/.X11-unix:/tmp/.X11-unix \
            -v `pwd`:/workspace \
+           -v $HOME/.ssh:/home/developer/.ssh \
            -v $HOME/.m2-mug:/home/developer/.m2 \
            -v $HOME/.ivy2-mug:/home/developer/.ivy2 \
-           -v $HOME/opt/jdk7:/home/developer/opt/jdk7 \
            -v $main_volume/.IntelliJIdea14:/home/developer/.IntelliJIdea14 \
            $volumes \
            -t fgrehm/intellij-idea:$idea_version
