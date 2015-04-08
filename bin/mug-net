@@ -1,0 +1,9 @@
+#!/bin/bash
+
+workdir=$(dirname $0)
+
+. $workdir/functions.sh
+
+resolve_mugrc
+
+docker run --rm --net=host -ti seges/net-tools

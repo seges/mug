@@ -189,6 +189,14 @@ connected to your local workspace. It mounts ```/home/<user>/development``` dire
 | oracle       | Oracle XE database. Registered service *oracle-dev.service.consul*, 49161 port for DB connection. More on [wnameless github](https://github.com/wnameless/docker-oracle-xe-11g). |
 | sqldeveloper | Oracle SQL Developer. More on [guywithnose Docker hub](https://registry.hub.docker.com/u/guywithnose/sqldeveloper) |
 
+### Other
+
+| Command      | Tool name |
+| ------------ | --------- |
+| net          | Various pre-installed network-related tools that you don't have to install yourself on your workstation (e.g. nmap, nslookup, dig,...) |
+
+
+
 # Helpers
 
 ## Discovery
