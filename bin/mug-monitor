@@ -1,0 +1,12 @@
+#!/bin/bash
+
+workdir=$(dirname $0)
+
+. $workdir/functions.sh
+
+resolve_mugrc
+
+docker run --rm -i --name mugmonitor \
+           -v /var/run/docker.sock:/var/run/docker.sock \
+           -t icecrime/docker-mon
+
