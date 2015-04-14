@@ -194,8 +194,7 @@ connected to your local workspace. It mounts ```/home/<user>/development``` dire
 | Command      | Tool name |
 | ------------ | --------- |
 | net          | Various pre-installed network-related tools that you don't have to install yourself on your workstation (e.g. nmap, nslookup, dig,...) |
-
-
+| monitor      | monitor your containers in a fancy console utilizing nice [docker-mon project](https://github.com/icecrime/docker-mon) |
 
 # Helpers
 
