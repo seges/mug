@@ -122,12 +122,22 @@ if [ "$1" == "" ]; then
 
 
   if [ "$module" == "seges/mug-frontend-javascript" ]; then
-    ports="-p 3000:3000"
+    if [ -z "$ports" ]; then
+      ports="-p 3000:3000"
+    fi
+    echo "$environments" | grep DISPLAY
+    if [ $? -ne 0 ]; then
+      environments="$environments -e DISPLAY=$DISPLAY"
+    fi
+    echo "$volumes" | grep /tmp/.X11-unix 
+    if [ $? -ne 0 ]; then
+      volumes="$volumes -v /tmp/.X11-unix:/tmp/.X11-unix"
+    fi
   elif [ "$module" == "seges/mug-backend-scala" ]; then
-    volumes="-v $HOME/.ivy2-mug:/home/developer/.ivy2"
+    volumes="$volumes -v $HOME/.ivy2-mug:/home/developer/.ivy2"
     volumes="$volumes -v $HOME/.m2-mug:/home/developer/.m2"
   elif [ "$module" == "seges/mug-backend-java" ]; then
-    volumes="-v $HOME/.m2-mug:/home/developer/.m2"
+    volumes="$volumes -v $HOME/.m2-mug:/home/developer/.m2"
   fi
 
   volumes="-v $HOME/.gnupg:/home/developer/.gnupg -v $HOME/.ssh:/home/developer/.ssh -v $cwd:/home/developer/$project_name $volumes"
@@ -146,9 +156,9 @@ if [ "$1" == "" ]; then
 
   echo "workdir $workdir"
 
-  echo "Running $project_name in $cwd as $module$version [ volumes = $volumes , ports = $ports, volumes-from = $volumes_from, $mug_data]"
+  echo "Running $project_name in $cwd as $module$version [ environments = $environments, volumes = $volumes , ports = $ports, volumes-from = $volumes_from, $mug_data]"
 
-  docker_cmd="docker run $ports $volumes $volumes_from --rm -ti $module$version"
+  docker_cmd="docker run $environments $ports $volumes $volumes_from --rm -ti $module$version"
 
   if [ "$mug_data_cmd" == "" ]; then
     $docker_cmd
