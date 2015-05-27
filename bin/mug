@@ -158,7 +158,7 @@ if [ "$1" == "" ]; then
 
   echo "Running $project_name in $cwd as $module$version [ environments = $environments, volumes = $volumes , ports = $ports, volumes-from = $volumes_from, $mug_data]"
 
-  docker_cmd="docker run $environments $ports $volumes $volumes_from --rm -ti $module$version"
+  docker_cmd="docker run $environments $ports $links $volumes $volumes_from --rm -ti $module$version"
 
   if [ "$mug_data_cmd" == "" ]; then
     $docker_cmd
