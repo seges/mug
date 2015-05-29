@@ -1,0 +1,43 @@
+FROM dockerfile/java:oracle-java8
+
+RUN useradd -m -s /bin/zsh developer
+
+RUN apt-get update && apt-get install -y mc git-flow git-extras curl zsh jq locales && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8 && echo "Europe/Bratislava" > /etc/timezone && dpkg-reconfigure -f noninteractive tzdata  
+
+RUN export uid=1000 gid=1000 && \
+    mkdir -p /home/developer/opt && \
+    echo "developer:x:${uid}:${gid}:Developer,,,:/home/developer:/bin/zsh" >> /etc/passwd && \
+    echo "developer:x:${uid}:" >> /etc/group && \
+    echo "developer ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/developer && \
+    chmod 0440 /etc/sudoers.d/developer && \
+    chown -R ${uid}:${gid}  /home/developer
+
+RUN locale-gen --no-purge en_US.UTF-8
+RUN update-locale LANG=en_US.UTF-8
+RUN dpkg-reconfigure locales
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
+
+
+USER developer
+ENV HOME /home/developer
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
+
+# Backend specific part
+
+# leiningen
+RUN mkdir /home/developer/bin && cd /home/developer/bin && wget https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein && chmod a+x lein
+RUN echo "export PATH=\$PATH:/home/developer/bin" >> /home/developer/.zshrc
+RUN echo "export PATH=\$PATH:/home/developer/bin" >> /home/developer/.bashrc
+RUN /home/developer/bin/lein
+
+#RUN mv /home/developer/.ivy2 /home/developer/.ivy2.tmpl
+
+ADD entrypoint.sh /home/developer/
+ADD docker-entrypoint.d/ /docker-entrypoint.d/
+
+CMD ["sudo", "/home/developer/entrypoint.sh"]
+

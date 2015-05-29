@@ -28,6 +28,9 @@ function resolve_module
   elif [ -f $cwd/build.sbt ]; then
     module="seges/mug-backend-scala"
     project_name=$(cat $cwd/build.sbt | grep "name" | sed 's/.*"\([^"]*\)"/\1/')
+  elif [ -f $cwd/project.clj ]; then
+    module="seges/mug-backend-clojure"
+    project_name=$(cat $cwd/project.clj | grep "defproject" | sed 's/.*\/\([^"]*\)/\1/' | cut -d" " -s -f1)
   elif [ -f $cwd/pom.xml ]; then
     module="seges/mug-backend-java"
     project_name=$(cat $cwd/pom.xml | getXmlVal )
