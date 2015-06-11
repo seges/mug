@@ -30,7 +30,7 @@ curl -L https://github.com/seges/cutlery/raw/master/setup.sh | sudo sh
 
 ```
 # prepare environment after start of your computer
-mug docker-base restart wlan0
+mug docker-base restart
 
 # fire your favorite IDE, e.g.
 mug eclipse
@@ -59,7 +59,7 @@ Mug's main purpose is to support your whole development lifecycle and therefore 
 mug currently supports runtime environment (composition of your application containers, not composition of development containers) utilizing Consul and Ambassador. It is capable of preparing such environment as easy as:
 
 ```
-mug docker-base restart wlan0
+mug docker-base restart
 ```
 
 which:
@@ -100,6 +100,7 @@ It is possible to define some project or workbench common parameters not include
 
 | Parameter               | Description
 | ----------------------- | ---------------
+| default_iface           | default non-docker interface where services are advertised (e.g. Consul)
 | mug_data                | Specifies mug data container to be run for every mug execution if it is not already running. See [Custom project/workbench data](#custom-projectworkbench-data).
 | versions                | Overrides default (latest) or unspecified versions of images resolved for particular module. It contains space delimited list of named image artifacts: <repository>/<image>:<tag>. Example: ```versions="seges/mug-backend-java:oracle-java7 seges/mug-backend-scala:2.11"```
 | development_dir         | Overrides default (/home/host_user/development) directory where workspace and source code is, so it is available to one of IDEs
