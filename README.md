@@ -105,6 +105,7 @@ It is possible to define some project or workbench common parameters not include
 | versions                | Overrides default (latest) or unspecified versions of images resolved for particular module. It contains space delimited list of named image artifacts: <repository>/<image>:<tag>. Example: ```versions="seges/mug-backend-java:oracle-java7 seges/mug-backend-scala:2.11"```
 | development_dir         | Overrides default (/home/host_user/development) directory where workspace and source code is, so it is available to one of IDEs
 | idea_variant            | Currently if set to "IU", it will use IntelliJ Idea Ultimate Trial. If not set, Community Edition will be used
+| base_autostart          | When equals to 'true', initialize Docker Base automatically by calling 'mug docker-base restart'.
 
 #### Configuration resolution
 

@@ -113,6 +113,15 @@ shift $((OPTIND-1))
 
 resolve_mugrc
 
+if [ "$base_autostart" == "true" ]; then
+
+  mug_consul=$(docker ps -f status=running|grep consul| wc -l)
+  if [ $mug_consul -eq 0 ]; then
+    echo "Auto-starting Docker base"
+    $MUG_HOME/bin/mug-docker-base restart
+  fi
+fi
+
 if [ "$1" == "" ]; then
   
   [ "$module" == "" ] && resolve_module
