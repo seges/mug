@@ -1,7 +1,7 @@
 Mug development workbench
 =========================
 
-![alt text](http://pixabay.com/static/uploads/photo/2012/04/13/11/48/coffee-mug-32046_640.png "mug")
+![alt text](http://seges.github.io/mug/images/logo.png "mug")
 
 Mug helps you not to install your development workbench. It should always be easy as drinking from a mug ;)
 
