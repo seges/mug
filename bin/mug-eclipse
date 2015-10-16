@@ -25,10 +25,10 @@ else
            -e DISPLAY=$DISPLAY \
            -v /tmp/.X11-unix:/tmp/.X11-unix \
            -v `pwd`:/workspace \
+           -v $HOME/.ssh:/home/developer/.ssh \
            -v $HOME/.mug/volumes/eclipse/.eclipse:/home/developer/.eclipse \
            -v $HOME/.m2-mug:/home/developer/.m2 \
            -v $HOME/.ivy2-mug:/home/developer/.ivy2 \
-           -v $HOME/opt/jdk7:/home/developer/opt/jdk7 \
            $volumes \
            -t fgrehm/eclipse:v4.4.1
 fi

@@ -28,24 +28,13 @@ ENV LC_ALL en_US.UTF-8
 
 # Backend specific part
 
-# scala
-RUN cd /home/developer/opt && wget http://www.scala-lang.org/files/archive/scala-2.11.5.tgz 
-RUN cd /home/developer/opt && tar xzf scala-2.11.5.tgz && ln -s scala-2.11.5 scala && echo "export PATH=\$PATH:/home/developer/opt/scala/bin" >> /home/developer/.bashrc
+# leiningen
+RUN mkdir /home/developer/bin && cd /home/developer/bin && wget https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein && chmod a+x lein
+RUN echo "export PATH=\$PATH:/home/developer/bin" >> /home/developer/.zshrc
+RUN echo "export PATH=\$PATH:/home/developer/bin" >> /home/developer/.bashrc
+RUN /home/developer/bin/lein
 
-# sbt
-RUN cd /home/developer/opt && wget https://dl.bintray.com/sbt/native-packages/sbt/0.13.7/sbt-0.13.7.tgz
-RUN cd /home/developer/opt && tar xzf sbt-0.13.7.tgz && ln -s sbt-0.13.7 sbt && echo "export PATH=\$PATH:/home/developer/opt/sbt/bin" >> /home/developer/.bashrc
-RUN /home/developer/opt/sbt/bin/sbt about
-
-# sbt Idea
-RUN mkdir -p /home/developer/.sbt/0.13/plugins && echo "addSbtPlugin(\"com.github.mpeltonen\" % \"sbt-idea\" % \"1.6.0\")" > /home/developer/.sbt/0.13/plugins/build.sbt
-
-# Conscript & Giter
-RUN curl https://raw.githubusercontent.com/n8han/conscript/master/setup.sh | sh
-RUN echo "export PATH=\$PATH:\$HOME/bin" >> /home/developer/.bashrc
-RUN /home/developer/bin/cs n8han/giter8
-
-RUN mv /home/developer/.ivy2 /home/developer/.ivy2.tmpl
+#RUN mv /home/developer/.ivy2 /home/developer/.ivy2.tmpl
 
 ADD entrypoint.sh /home/developer/
 ADD docker-entrypoint.d/ /docker-entrypoint.d/

@@ -28,6 +28,9 @@ function resolve_module
   elif [ -f $cwd/build.sbt ]; then
     module="seges/mug-backend-scala"
     project_name=$(cat $cwd/build.sbt | grep "name" | sed 's/.*"\([^"]*\)"/\1/')
+  elif [ -f $cwd/project.clj ]; then
+    module="seges/mug-backend-clojure"
+    project_name=$(cat $cwd/project.clj | grep "defproject" | sed 's/.*\/\([^"]*\)/\1/' | cut -d" " -s -f1)
   elif [ -f $cwd/pom.xml ]; then
     module="seges/mug-backend-java"
     project_name=$(cat $cwd/pom.xml | getXmlVal )
@@ -110,6 +113,15 @@ shift $((OPTIND-1))
 
 resolve_mugrc
 
+if [ "$base_autostart" == "true" ]; then
+
+  mug_consul=$(docker ps -f status=running|grep consul| wc -l)
+  if [ $mug_consul -eq 0 ]; then
+    echo "Auto-starting Docker base"
+    $MUG_HOME/bin/mug-docker-base restart
+  fi
+fi
+
 if [ "$1" == "" ]; then
   
   [ "$module" == "" ] && resolve_module
@@ -122,12 +134,22 @@ if [ "$1" == "" ]; then
 
 
   if [ "$module" == "seges/mug-frontend-javascript" ]; then
-    ports="-p 3000:3000"
+    if [ -z "$ports" ]; then
+      ports="-p 3000:3000"
+    fi
+    echo "$environments" | grep DISPLAY
+    if [ $? -ne 0 ]; then
+      environments="$environments -e DISPLAY=$DISPLAY"
+    fi
+    echo "$volumes" | grep /tmp/.X11-unix 
+    if [ $? -ne 0 ]; then
+      volumes="$volumes -v /tmp/.X11-unix:/tmp/.X11-unix"
+    fi
   elif [ "$module" == "seges/mug-backend-scala" ]; then
-    volumes="-v $HOME/.ivy2-mug:/home/developer/.ivy2"
+    volumes="$volumes -v $HOME/.ivy2-mug:/home/developer/.ivy2"
     volumes="$volumes -v $HOME/.m2-mug:/home/developer/.m2"
   elif [ "$module" == "seges/mug-backend-java" ]; then
-    volumes="-v $HOME/.m2-mug:/home/developer/.m2"
+    volumes="$volumes -v $HOME/.m2-mug:/home/developer/.m2"
   fi
 
   volumes="-v $HOME/.gnupg:/home/developer/.gnupg -v $HOME/.ssh:/home/developer/.ssh -v $cwd:/home/developer/$project_name $volumes"
@@ -146,9 +168,9 @@ if [ "$1" == "" ]; then
 
   echo "workdir $workdir"
 
-  echo "Running $project_name in $cwd as $module$version [ volumes = $volumes , ports = $ports, volumes-from = $volumes_from, $mug_data]"
+  echo "Running $project_name in $cwd as $module$version [ environments = $environments, volumes = $volumes , ports = $ports, volumes-from = $volumes_from, $mug_data]"
 
-  docker_cmd="docker run $ports $volumes $volumes_from --rm -ti $module$version"
+  docker_cmd="docker run $environments $ports $links $volumes $volumes_from --rm -ti $module$version"
 
   if [ "$mug_data_cmd" == "" ]; then
     $docker_cmd

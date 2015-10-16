@@ -29,8 +29,10 @@ curl -L https://github.com/seges/cutlery/raw/master/setup.sh | sudo sh
 # Example usage
 
 ```
-# prepare environment after start of your computer
-mug docker-base restart wlan0
+# first time set base auto-start
+echo "base_autostart=true" >> ~/.mugrc
+# or prepare environment after start of your computer
+mug docker-base restart
 
 # fire your favorite IDE, e.g.
 mug eclipse
@@ -59,7 +61,12 @@ Mug's main purpose is to support your whole development lifecycle and therefore 
 mug currently supports runtime environment (composition of your application containers, not composition of development containers) utilizing Consul and Ambassador. It is capable of preparing such environment as easy as:
 
 ```
-mug docker-base restart wlan0
+echo "base_autostart=true" >> ~/.mugrc
+```
+If you want to automatically start the environment and check each time mug is called, or do it manually:
+
+```
+mug docker-base restart
 ```
 
 which:
@@ -100,10 +107,12 @@ It is possible to define some project or workbench common parameters not include
 
 | Parameter               | Description
 | ----------------------- | ---------------
+| default_iface           | default non-docker interface where services are advertised (e.g. Consul)
 | mug_data                | Specifies mug data container to be run for every mug execution if it is not already running. See [Custom project/workbench data](#custom-projectworkbench-data).
 | versions                | Overrides default (latest) or unspecified versions of images resolved for particular module. It contains space delimited list of named image artifacts: <repository>/<image>:<tag>. Example: ```versions="seges/mug-backend-java:oracle-java7 seges/mug-backend-scala:2.11"```
 | development_dir         | Overrides default (/home/host_user/development) directory where workspace and source code is, so it is available to one of IDEs
 | idea_variant            | Currently if set to "IU", it will use IntelliJ Idea Ultimate Trial. If not set, Community Edition will be used
+| base_autostart          | When equals to 'true', initialize Docker Base automatically by calling 'mug docker-base restart'.
 
 #### Configuration resolution
 
@@ -188,6 +197,13 @@ connected to your local workspace. It mounts ```/home/<user>/development``` dire
 | ------------ | --------- |
 | oracle       | Oracle XE database. Registered service *oracle-dev.service.consul*, 49161 port for DB connection. More on [wnameless github](https://github.com/wnameless/docker-oracle-xe-11g). |
 | sqldeveloper | Oracle SQL Developer. More on [guywithnose Docker hub](https://registry.hub.docker.com/u/guywithnose/sqldeveloper) |
+
+### Other
+
+| Command      | Tool name |
+| ------------ | --------- |
+| net          | Various pre-installed network-related tools that you don't have to install yourself on your workstation (e.g. nmap, nslookup, dig,...) |
+| monitor      | monitor your containers in a fancy console utilizing nice [docker-mon project](https://github.com/icecrime/docker-mon) |
 
 # Helpers
 
