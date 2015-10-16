@@ -54,6 +54,7 @@ docker run -d --name mugintellij \
            -v $HOME/.m2-mug:/home/developer/.m2 \
            -v $HOME/.ivy2-mug:/home/developer/.ivy2 \
            -v $main_volume/.IntelliJIdea14:/home/developer/.IntelliJIdea14 \
+           -v $main_volume/.IntelliJIdea15:/home/developer/.IntelliJIdea15 \
            $volumes \
            -t fgrehm/intellij-idea:$idea_version
 
