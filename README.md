@@ -29,7 +29,9 @@ curl -L https://github.com/seges/cutlery/raw/master/setup.sh | sudo sh
 # Example usage
 
 ```
-# prepare environment after start of your computer
+# first time set base auto-start
+echo "base_autostart=true" >> ~/.mugrc
+# or prepare environment after start of your computer
 mug docker-base restart
 
 # fire your favorite IDE, e.g.
@@ -57,6 +59,11 @@ Mug's main purpose is to support your whole development lifecycle and therefore 
 ## Setup phase
 
 mug currently supports runtime environment (composition of your application containers, not composition of development containers) utilizing Consul and Ambassador. It is capable of preparing such environment as easy as:
+
+```
+echo "base_autostart=true" >> ~/.mugrc
+```
+If you want to automatically start the environment and check each time mug is called, or do it manually:
 
 ```
 mug docker-base restart
