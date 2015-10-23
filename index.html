@@ -65,8 +65,10 @@
 <h1>
 <a id="example-usage" class="anchor" href="#example-usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example usage</h1>
 
-<pre><code># prepare environment after start of your computer
-mug docker-base restart wlan0
+<pre><code># first time set base auto-start
+echo "base_autostart=true" &gt;&gt; ~/.mugrc
+# or prepare environment after start of your computer
+mug docker-base restart
 
 # fire your favorite IDE, e.g.
 mug eclipse
@@ -98,7 +100,12 @@ mug
 
 <p>mug currently supports runtime environment (composition of your application containers, not composition of development containers) utilizing Consul and Ambassador. It is capable of preparing such environment as easy as:</p>
 
-<pre><code>mug docker-base restart wlan0
+<pre><code>echo "base_autostart=true" &gt;&gt; ~/.mugrc
+</code></pre>
+
+<p>If you want to automatically start the environment and check each time mug is called, or do it manually:</p>
+
+<pre><code>mug docker-base restart
 </code></pre>
 
 <p>which:</p>
@@ -154,6 +161,10 @@ mug &lt;module&gt;
 </thead>
 <tbody>
 <tr>
+<td>default_iface</td>
+<td>default non-docker interface where services are advertised (e.g. Consul)</td>
+</tr>
+<tr>
 <td>mug_data</td>
 <td>Specifies mug data container to be run for every mug execution if it is not already running. See <a href="#custom-projectworkbench-data">Custom project/workbench data</a>.</td>
 </tr>
@@ -169,6 +180,10 @@ mug &lt;module&gt;
 <tr>
 <td>idea_variant</td>
 <td>Currently if set to "IU", it will use IntelliJ Idea Ultimate Trial. If not set, Community Edition will be used</td>
+</tr>
+<tr>
+<td>base_autostart</td>
+<td>When equals to 'true', initialize Docker Base automatically by calling 'mug docker-base restart'.</td>
 </tr>
 </tbody>
 </table>
@@ -296,6 +311,29 @@ CMD ["sudo", "/home/developer/entrypoint.sh"]
 </tbody>
 </table>
 
+<h3>
+<a id="other" class="anchor" href="#other" aria-hidden="true"><span class="octicon octicon-link"></span></a>Other</h3>
+
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Tool name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>net</td>
+<td>Various pre-installed network-related tools that you don't have to install yourself on your workstation (e.g. nmap, nslookup, dig,...)</td>
+</tr>
+<tr>
+<td>monitor</td>
+<td>monitor your containers in a fancy console utilizing nice <a href="https://github.com/icecrime/docker-mon">docker-mon project</a>
+</td>
+</tr>
+</tbody>
+</table>
+
 <h1>
 <a id="helpers" class="anchor" href="#helpers" aria-hidden="true"><span class="octicon octicon-link"></span></a>Helpers</h1>
 
@@ -356,6 +394,13 @@ CMD ["sudo", "/home/developer/entrypoint.sh"]
 </ul>
 
 <p>Use <code>docker-build.sh</code> and <code>docker-push.sh</code> commands to prepare images.</p>
+
+<h1>
+<a id="related-articles" class="anchor" href="#related-articles" aria-hidden="true"><span class="octicon octicon-link"></span></a>Related articles</h1>
+
+<ul>
+<li><a href="https://medium.com/@ladislavGazo/containers-only-based-development-environment-17c9afe807f2">Containers (only) based Development Environment</a></li>
+</ul>
       </section>
     </div>
 
