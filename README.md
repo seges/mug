@@ -243,3 +243,6 @@ Copies ivy cached dependencies
 
 Use ```docker-build.sh``` and ```docker-push.sh``` commands to prepare images.
 
+# Related articles
+
+* [Containers (only) based Development Environment](https://medium.com/@ladislavGazo/containers-only-based-development-environment-17c9afe807f2)
