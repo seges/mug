@@ -25,6 +25,7 @@ function resolve_module
   if [ -f $cwd/package.json ]; then
     module="seges/mug-frontend-javascript"
     project_name=$(cat $cwd/package.json | getJsonVal "['name']" | sed -e 's/^"//'  -e 's/"$//')
+    version=":4.2.2"
   elif [ -f $cwd/build.sbt ]; then
     module="seges/mug-backend-scala"
     project_name=$(cat $cwd/build.sbt | grep "name" | sed 's/.*"\([^"]*\)"/\1/')
@@ -134,9 +135,9 @@ if [ "$1" == "" ]; then
 
 
   if [ "$module" == "seges/mug-frontend-javascript" ]; then
-    if [ -z "$ports" ]; then
-      ports="-p 3000:3000"
-    fi
+#    if [ -z "$ports" ]; then
+#      ports="-p 3000:3000"
+#    fi
     echo "$environments" | grep DISPLAY
     if [ $? -ne 0 ]; then
       environments="$environments -e DISPLAY=$DISPLAY"
@@ -168,9 +169,9 @@ if [ "$1" == "" ]; then
 
   echo "workdir $workdir"
 
-  echo "Running $project_name in $cwd as $module$version [ environments = $environments, volumes = $volumes , ports = $ports, volumes-from = $volumes_from, $mug_data]"
+  echo "Running $project_name in $cwd as $module$version [ environments = $environments, volumes = $volumes , ports = $ports, volumes-from = $volumes_from, expose = $expose, $mug_data]"
 
-  docker_cmd="docker run $environments $ports $links $volumes $volumes_from --rm -ti $module$version"
+  docker_cmd="docker run $environments $expose $ports $links $volumes $volumes_from --rm -ti $module$version"
 
   if [ "$mug_data_cmd" == "" ]; then
     $docker_cmd
