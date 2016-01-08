@@ -1,0 +1,38 @@
+#!/bin/bash
+
+workdir=$(dirname $0)
+
+. $workdir/functions.sh
+
+resolve_mugrc
+
+if [ ! -n "$development_dir" ]; then
+  development_dir="$HOME/development"
+fi
+
+volumes="$volumes -v $development_dir:/home/user/development"
+
+echo "[IDE] Development dir = $development_dir"
+
+sudo xhost + 
+
+docker ps -a|grep mugche
+
+if [ "$?" -eq 0 ]; then
+  docker start mugche
+else
+#	     -v $HOME/.mug/volumes/che/fs-root:/home/user/temp/fs-root 
+  docker run -d \
+	     -p 8080:8080 \
+	     -p 49152-49162:49152-49162 \
+	     -e SERVICE_NAME=mugche \
+	     --privileged \
+             -v $HOME/.ssh:/home/user/.ssh \
+             -v $HOME/.mug/volumes/che/.che:/home/user/.che \
+             -v $HOME/.mug/volumes/che/fs-root:/home/user/che-3.13.4.2/temp/fs-root \
+             $volumes \
+             --name mugche \
+	     -t codenvy/che
+fi
+
+

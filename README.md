@@ -188,6 +188,8 @@ Mug is capable of running your favourite IDEs:
 | ------------ | --------- |
 | eclipse      | Eclipse IDE - EE version |
 | idea         | IntelliJ Idea - by default Community Edition is run, see *idea_variant* configuration option |
+| atom         | Atom - hackable editor |
+| che          | Eclipse Che - web IDE |
 
 connected to your local workspace. It mounts ```/home/<user>/development``` directory by default to the container's environment into ```/home/developer/development```. It can be overriden by Mug configuration.
 
@@ -204,6 +206,7 @@ connected to your local workspace. It mounts ```/home/<user>/development``` dire
 | ------------ | --------- |
 | net          | Various pre-installed network-related tools that you don't have to install yourself on your workstation (e.g. nmap, nslookup, dig,...) |
 | monitor      | monitor your containers in a fancy console utilizing nice [docker-mon project](https://github.com/icecrime/docker-mon) |
+| slate        | It provides an environment where you can build [Slate API Documentation](https://github.com/tripit/slate) |
 
 # Helpers
 

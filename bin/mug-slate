@@ -1,0 +1,29 @@
+#!/bin/bash
+
+workdir=$(dirname $0)
+
+. $workdir/functions.sh
+
+resolve_mugrc
+
+if [ ! -n "$development_dir" ]; then
+  development_dir="$HOME/development"
+fi
+
+volumes="$volumes -v $development_dir:/home/developer/development"
+
+echo "[IDE] Development dir = $development_dir"
+
+docker ps -a|grep mugslate
+
+if [ "$?" -eq 0 ]; then
+  docker start mugslate
+else
+  docker run --rm --name mugslate \
+           -v `pwd`:/app/source \
+           -v $HOME/.ssh:/home/developer/.ssh \
+	   -e SERVICE_NAME=mug-slate \
+           $volumes \
+           -ti seges/slate:1.2
+fi
+

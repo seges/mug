@@ -1,0 +1,36 @@
+#!/bin/bash
+
+workdir=$(dirname $0)
+
+. $workdir/functions.sh
+
+resolve_mugrc
+
+if [ ! -n "$development_dir" ]; then
+  development_dir="$HOME/development"
+fi
+
+volumes="$volumes -v $development_dir:/home/developer/development"
+
+echo "[IDE] Development dir = $development_dir"
+
+sudo xhost + 
+
+docker ps -a|grep mugatom1
+
+if [ "$?" -eq 0 ]; then
+  docker start mugatom1
+else
+  docker run -d --name mugatom1 \
+           -e DISPLAY=$DISPLAY \
+           -v /tmp/.X11-unix:/tmp/.X11-unix \
+	   -v /dev/shm:/dev/shm \
+           -v `pwd`:/workspace \
+           -v $HOME/.ssh:/home/developer/.ssh \
+           -v $HOME/.mug/volumes/atom/.atom:/home/developer/.atom \
+           -v $HOME/.m2-mug:/home/developer/.m2 \
+           -v $HOME/.ivy2-mug:/home/developer/.ivy2 \
+           $volumes \
+           -t jamesnetherton/docker-atom-editor
+fi
+
