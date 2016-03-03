@@ -24,5 +24,4 @@ fi
 
 cutlery global-dns docker0
 cutlery discovery $cmd "$ADVERTISE -bootstrap"
-cutlery ambassador $cmd
 

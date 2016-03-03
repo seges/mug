@@ -45,7 +45,7 @@ function resolve_version
 
   for version in $versions; do
     arrIN=(${version//:/ })
-    if [ ${arrIN[0]} == $_module ]; then
+    if [ "${arrIN[0]}" == "$_module" ]; then
       eval "_version=${arrIN[1]}"
     fi 
   done
