@@ -45,6 +45,13 @@ if [ ! -d "$main_volume" ]; then
   chown -R 1000 $main_volume
 fi
 
+docker stop alpine-java-dcevm
+docker rm alpine-java-dcevm
+docker run -d --name alpine-java-dcevm \
+           -v /opt/jdk \
+	   -t anapsix/alpine-java:jdk8-dcevm \
+	   /bin/true
+
 docker rm mugintellij
 docker run -d --name mugintellij \
            -e DISPLAY=$DISPLAY \
@@ -55,6 +62,9 @@ docker run -d --name mugintellij \
            -v $HOME/.ivy2-mug:/home/developer/.ivy2 \
            -v $main_volume/.IntelliJIdea14:/home/developer/.IntelliJIdea14 \
            -v $main_volume/.IntelliJIdea15:/home/developer/.IntelliJIdea15 \
+           -v $main_volume/.IntelliJIdea2016.1:/home/developer/.IntelliJIdea2016.1 \
+           -v $main_volume/.IntelliJIdea2016.2:/home/developer/.IntelliJIdea2016.2 \
+	   --volumes-from alpine-java-dcevm \
            $volumes \
            -t fgrehm/intellij-idea:$idea_version
 
