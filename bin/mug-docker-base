@@ -11,17 +11,29 @@ fi
 cmd=$1
 if [ ! -z "$2" ]; then
   IFACE=$2
+
+  if [ ! -z "$IFACE" ]; then
+    IP=$(ifconfig | grep $IFACE -A1 | tail -n1 | awk '{print $2}' | cut -f2 -d':')
+    echo "Resolved IP is $IP and is going to be used to advertise Consul on it"
+    ADVERTISE="-advertise $IP"  
+  fi
+
 else
   . $workdir/functions.sh
   resolve_mugrc
-  IFACE=$default_iface
+ 
+  for default_iface in $default_ifaces; do
+	  echo "default iface $default_iface"
+	if [ ! -z "$default_iface" ]; then
+	  IP=$(ifconfig | grep $default_iface -A1 | tail -n1 | awk '{print $2}' | cut -f2 -d':')
+	  if [ ! "$IP" == "BROADCAST" ]; then
+	    echo "Resolved IP is $IP and is going to be used to advertise Consul on it"
+	    ADVERTISE="-advertise $IP"
+	    break;
+	  fi
+	fi
+  done
 fi
-if [ ! -z "$IFACE" ]; then
-  IP=$(ifconfig | grep $IFACE -A1 | tail -n1 | awk '{print $2}' | cut -f2 -d':')
-  echo "Resolved IP is $IP and is going to be used to advertise Consul on it"
-  ADVERTISE="-advertise $IP"  
-fi
-
 cutlery global-dns docker0
 cutlery discovery $cmd "$ADVERTISE -bootstrap"
 
