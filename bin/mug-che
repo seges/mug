@@ -18,21 +18,39 @@ sudo xhost +
 
 docker ps -a|grep mugche
 
-if [ "$?" -eq 0 ]; then
-  docker start mugche
-else
+#if [ "$?" -eq 0 ]; then
+#  docker start mugche
+#else
 #	     -v $HOME/.mug/volumes/che/fs-root:/home/user/temp/fs-root 
-  docker run -d \
+#             -v $HOME/.ssh:/home/user/.ssh \
+             #-v $HOME/.mug/volumes/che/.che:/home/user/.che \
+	     #-p 32768-32788:32768-32788 \
+             #-e DOCKER_MACHINE_HOST=172.17.0.1 \
+             #--net=host \
+#             -v /home/user/che/tomcat/temp/local-storage:/home/user/che/tomcat/temp/local-storage \
+#	     -v $HOME/.mug/volumes/che/che.properties:/home/user/.che/che.properties \
+  docker run --rm \
 	     -p 8080:8080 \
-	     -p 49152-49162:49152-49162 \
+             -v /var/run/docker.sock:/var/run/docker.sock \
+	     -v /home/user/che/lib:/home/user/che/lib-copy \
+             -v /home/user/che/workspaces:/home/user/che/workspaces \
+             -v /home/user/che/storage:/home/user/che/storage \
+	     -e CHE_DOCKER_MACHINE_HOST=172.17.0.1 \
+	     -e DOCKER_HOST=tcp://192.168.100.9:2375 \
 	     -e SERVICE_NAME=mugche \
-	     --privileged \
-             -v $HOME/.ssh:/home/user/.ssh \
-             -v $HOME/.mug/volumes/che/.che:/home/user/.che \
-             -v $HOME/.mug/volumes/che/fs-root:/home/user/che-3.13.4.2/temp/fs-root \
-             $volumes \
+	     -e SERVICE_8080_NAME=mugche \
              --name mugche \
-	     -t codenvy/che
-fi
+	     -ti codenvy/che:4.5.1 --remote:192.168.100.9
+             #bash
+
+             #-v $HOME/.mug/volumes/che/lib:/home/user/che/lib-copy \
+             #-v $HOME/.mug/volumes/che/workspaces:/home/user/che/workspaces \
+	     #-v $HOME/.mug/volumes/che/tomcat/temp/local-storage:/home/user/che/tomcat/temp/local-storage \
+
+	     #-p 49152-49162:49152-49162 \
+             #$volumes \
+	     #--privileged \
+             #-v $HOME/.mug/volumes/che/fs-root:/home/user/che/temp/fs-root \
+#fi
 
 
