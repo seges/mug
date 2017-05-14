@@ -1,0 +1,97 @@
+FROM ubuntu:14.04
+
+RUN \
+  apt-get update && \
+  apt-get install -y build-essential && \
+  apt-get install -y software-properties-common && \
+  apt-get install -y byobu curl git htop man unzip vim wget && \
+  apt-get install -y python python-dev python-pip python-virtualenv && \
+  rm -rf /var/lib/apt/lists/*
+
+RUN useradd -m -s /bin/zsh developer
+
+RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add - && \
+    sudo sh -c "echo deb http://dl.google.com/linux/chrome/deb/ stable main > /etc/apt/sources.list.d/google.list" && \
+    apt-get update && apt-get install -y mc git-flow git-extras curl zsh jq locales openjdk-7-jre-headless firefox google-chrome-stable && \
+    localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8 && echo "Europe/Bratislava" > /etc/timezone && dpkg-reconfigure -f noninteractive tzdata
+
+#ADD .alias /home/developer/
+COPY home-init.d  /home/developer/
+
+RUN export uid=1000 gid=1000 && \
+    mkdir -p /home/developer && \
+    echo "developer:x:${uid}:${gid}:Developer,,,:/home/developer:/usr/bin/zsh" >> /etc/passwd && \
+    echo "developer:x:${uid}:" >> /etc/group && \
+    echo "developer ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/developer && \
+    chmod 0440 /etc/sudoers.d/developer && \
+    chown ${uid}:${gid} -R /home/developer
+
+RUN locale-gen --no-purge en_US.UTF-8
+RUN update-locale LANG=en_US.UTF-8
+RUN dpkg-reconfigure locales
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
+
+# from node's Dockerfile
+
+RUN set -ex \
+  && for key in \
+    9554F04D7259F04124DE6B476D5A82AC7E37093B \
+    94AE36675C464D64BAFA68DD7434390BDBE9B9C5 \
+    FD3A5288F042B6850C66B31F09FE44734EB7990E \
+    71DCFD284A79C3B38668286BC97EC7A07EDE3FC1 \
+    DD8F2338BAE7501E3DD5AC78C273792F7D83545D \
+    B9AE9905FFD7803F25714661B63B535A4C206CA9 \
+    C4F0DFFF4E8C1A8236409D08E73BC641CC11F4C8 \
+    56730D5401028683275BD23C23EFEFE93C4CFFFE \
+  ; do \
+    gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key" || \
+    gpg --keyserver pgp.mit.edu --recv-keys "$key" || \
+    gpg --keyserver keyserver.pgp.com --recv-keys "$key" ; \
+  done
+
+ENV NPM_CONFIG_LOGLEVEL info
+ENV NODE_VERSION 7.10.0
+
+RUN curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.xz" \
+  && curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt.asc" \
+  && gpg --batch --decrypt --output SHASUMS256.txt SHASUMS256.txt.asc \
+  && grep " node-v$NODE_VERSION-linux-x64.tar.xz\$" SHASUMS256.txt | sha256sum -c - \
+  && tar -xJf "node-v$NODE_VERSION-linux-x64.tar.xz" -C /usr/local --strip-components=1 \
+  && rm "node-v$NODE_VERSION-linux-x64.tar.xz" SHASUMS256.txt.asc SHASUMS256.txt \
+  && ln -s /usr/local/bin/node /usr/local/bin/nodejs
+
+ENV YARN_VERSION 0.23.4
+
+RUN set -ex \
+  && for key in \
+    6A010C5166006599AA17F08146C2130DFD2497F5 \
+  ; do \
+    gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key" || \
+    gpg --keyserver pgp.mit.edu --recv-keys "$key" || \
+    gpg --keyserver keyserver.pgp.com --recv-keys "$key" ; \
+  done \
+  && curl -fSL -o yarn.js "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-legacy-$YARN_VERSION.js" \
+  && curl -fSL -o yarn.js.asc "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-legacy-$YARN_VERSION.js.asc" \
+  && gpg --batch --verify yarn.js.asc yarn.js \
+  && rm yarn.js.asc \
+  && mv yarn.js /usr/local/bin/yarn \
+  && chmod +x /usr/local/bin/yarn
+
+# end from node's Dockerfile
+
+USER developer
+ENV HOME /home/developer
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
+ENV SHELL /usr/bin/zsh
+
+RUN curl -L https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh | /usr/bin/zsh
+
+ADD entrypoint.sh /home/developer/
+ADD docker-entrypoint.d/ /docker-entrypoint.d/
+
+CMD ["sudo", "/home/developer/entrypoint.sh"]
+
