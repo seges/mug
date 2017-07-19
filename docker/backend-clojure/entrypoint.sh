@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/ash
 
 if [ -d /docker-entrypoint.d ]; then
 	for f in /docker-entrypoint.d/*.sh; do
@@ -6,4 +6,4 @@ if [ -d /docker-entrypoint.d ]; then
 	done
 fi
 
-su - developer
+#su - developer
