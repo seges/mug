@@ -25,7 +25,7 @@ function resolve_module
   if [ -f $cwd/package.json ]; then
     module="seges/mug-frontend-javascript"
     project_name=$(cat $cwd/package.json | getJsonVal "['name']" | sed -e 's/^"//'  -e 's/"$//')
-    version=":8.9.1"
+    version=":10.15.3"
   elif [ -f $cwd/build.sbt ]; then
     module="seges/mug-backend-scala"
     project_name=$(cat $cwd/build.sbt | grep "name" | sed 's/.*"\([^"]*\)"/\1/')
