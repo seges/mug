@@ -1,0 +1,19 @@
+version: '3.4'
+
+services:
+  dev:
+    image: rust:1.32
+    volumes:
+      - projects:/home/developer/projects
+    command: tail -f /dev/null
+    user: "1000"
+    environment:
+      - USER=eldzi
+
+volumes:
+  projects:
+    driver: local
+    driver_opts:
+      type: none
+      device: $PWD
+      o: bind
