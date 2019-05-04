@@ -9,24 +9,40 @@ It allows you to work in the same environment as it would be on the server in ad
 
 # Requirements
 
-* bash
-* curl
-* python
-* (optional) [cutlery](http://seges.github.io/cutlery)
+Just download the package with binary and templates and use it.
 
 # Install
+
+TBD. installation procedure changed
 
 ```
 curl -L https://github.com/seges/mug/raw/master/setup.sh | sudo sh
 ```
 
-strongly recommended but still optional, install Cutlery
+# Workbench
+
+This is the way you create your **node.js** based development workbench.
 
 ```
-curl -L https://github.com/seges/cutlery/raw/master/setup.sh | sudo sh
+mug create node
+docker-compose up -d dev
+docker-compose exec dev zsh
 ```
 
-# Example usage
+**mug** creates necessary Docker Compose file and you are good to go to develop your application inside the container without the need to install a thing. Once you fire the last command you are in the development container where you can execute ordinary node commands:
+
+```
+cd /home/developer/projects
+npm init
+```
+
+# Related articles
+
+* [Containers (only) based Development Environment](https://medium.com/@ladislavGazo/containers-only-based-development-environment-17c9afe807f2)
+
+# Old Mug
+
+## Example usage
 
 ```
 # first time set base auto-start
@@ -49,14 +65,14 @@ mug
 
 ```
 
-# Run
+## Run
 
 Mug's main purpose is to support your whole development lifecycle and therefore there are multiple options what to work with:
 
 * Setup phase - start default Docker containers supporting your runtime environment - ambassador, discovery, etc...
 * Development phase - jump to development environment and build, compile, etc...
 
-## Setup phase
+### Setup phase
 
 mug currently supports runtime environment (composition of your application containers, not composition of development containers) utilizing Consul and Ambassador. It is capable of preparing such environment as easy as:
 
@@ -77,16 +93,16 @@ which:
 
 It utilizes [Cutlery](http://seges.github.io/cutlery) project that contains basic scripts to work with such Docker environment.
 
-## Development phase
+### Development phase
 
-### Existing project
+#### Existing project
 
 ```
 cd <project_dir>
 mug
 ```
 
-### New project
+#### New project
 
 When you want to create a new project and you want to utilize the environment:
 
@@ -101,7 +117,7 @@ Where **module** is one of:
 * backend-scala
 * frontend-javascript
 
-### Configuration
+#### Configuration
 
 It is possible to define some project or workbench common parameters not included in the main code of mug to keep it reusable. You can create **.mugrc** file in your **home** directory or project workspace with following possible values:
 
@@ -114,7 +130,7 @@ It is possible to define some project or workbench common parameters not include
 | idea_variant            | Currently if set to "IU", it will use IntelliJ Idea Ultimate Trial. If not set, Community Edition will be used
 | base_autostart          | When equals to 'true', initialize Docker Base automatically by calling 'mug docker-base restart'.
 
-#### Configuration resolution
+##### Configuration resolution
 
 mug by default includes the configuration found in your home directory.
 
@@ -144,7 +160,7 @@ Example directory structure:
             |- projectB-rest
 ```
 
-### Custom project/workbench data
+#### Custom project/workbench data
 
 Imagine the situation you need to provide project or company specific data, e.g. default "settings.xml" in Maven repository or common configuration file for git. But such data is specific to the project or the company. In order not to modify the module image each time and have it generic, you should follow the Docker's pattern of data containers.
 
@@ -156,7 +172,7 @@ There is a short-cut to run the data container manually for whatever reason:
 mug-data acme/mug-data
 ```
 
-### Runtime initialization
+#### Runtime initialization
 
 There is a possibility to initialize various aspects of the running environment, e.g. copying some workbench data upon start of the module container. It is strongly dependent on the module image implementation but images already implemented in mug have basic initialization routines.
 
@@ -175,12 +191,12 @@ ADD docker-entrypoint.d/ /docker-entrypoint.d/
 CMD ["sudo", "/home/developer/entrypoint.sh"]
 ```
 
-## Developer tools
+### Developer tools
 
 Execute it via:
 ```mug <tool command>```
 
-### IDEs
+#### IDEs
 
 Mug is capable of running your favourite IDEs:
 
@@ -193,14 +209,14 @@ Mug is capable of running your favourite IDEs:
 
 connected to your local workspace. It mounts ```/home/<user>/development``` directory by default to the container's environment into ```/home/developer/development```. It can be overriden by Mug configuration.
 
-### Oracle
+#### Oracle
 
 | Command      | Tool name |
 | ------------ | --------- |
 | oracle       | Oracle XE database. Registered service *oracle-dev.service.consul*, 49161 port for DB connection. More on [wnameless github](https://github.com/wnameless/docker-oracle-xe-11g). |
 | sqldeveloper | Oracle SQL Developer. More on [guywithnose Docker hub](https://registry.hub.docker.com/u/guywithnose/sqldeveloper) |
 
-### Other
+#### Other
 
 | Command      | Tool name |
 | ------------ | --------- |
@@ -208,9 +224,9 @@ connected to your local workspace. It mounts ```/home/<user>/development``` dire
 | monitor      | monitor your containers in a fancy console utilizing nice [docker-mon project](https://github.com/icecrime/docker-mon) |
 | slate        | It provides an environment where you can build [Slate API Documentation](https://github.com/tripit/slate) |
 
-# Helpers
+## Helpers
 
-## Discovery
+### Discovery
 
 Open the UI for service discovery
 
@@ -218,26 +234,26 @@ Open the UI for service discovery
 mug discovery
 ```
 
-## Docker
+### Docker
 
 | Action                 | Command                |
 | ---------------------- | ---------------------- |
 | Clean stale images     | ```mug clean images``` |
 | Clean stale containers | ```mug clean ps```     |
 
-# Modules
+## Modules
 
-## backend-java
+### backend-java
 
 Copies /home/developer/home-init.d into /home/developer and /home/developer/.m2.tmpl into /home/developer/.m2/repository
 
-## backend-scala
+### backend-scala
 
 Copies ivy cached dependencies
 
-## frontend-javascript
+### frontend-javascript
 
-# Development
+## Development
 
 * implement a Docker image inside "docker" directory
 * extend ```bin/mug``` script in order to properly identify the project
@@ -246,6 +262,3 @@ Copies ivy cached dependencies
 
 Use ```docker-build.sh``` and ```docker-push.sh``` commands to prepare images.
 
-# Related articles
-
-* [Containers (only) based Development Environment](https://medium.com/@ladislavGazo/containers-only-based-development-environment-17c9afe807f2)
