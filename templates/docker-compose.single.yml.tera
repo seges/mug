@@ -1,0 +1,19 @@
+version: '3.4'
+
+services:
+  dev:
+    image: {{ lang.image }}
+    volumes:
+      - projects:/home/developer/projects
+    command: tail -f /dev/null
+    user: "{{ user.uid }}"
+    environment:
+      - USER={{ user.name }}
+
+volumes:
+  projects:
+    driver: local
+    driver_opts:
+      type: none
+      device: $PWD
+      o: bind

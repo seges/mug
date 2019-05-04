@@ -21,7 +21,8 @@ if [ ! -z "$2" ]; then
 else
   . $workdir/functions.sh
   resolve_mugrc
- 
+
+  echo "Default interfaces = $default_ifaces" 
   for default_iface in $default_ifaces; do
 	  echo "default iface $default_iface"
 	if [ ! -z "$default_iface" ]; then

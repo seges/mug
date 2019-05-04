@@ -1,0 +1,10 @@
+[package]
+name = "mug"
+version = "0.1.0"
+authors = ["Ladislav Gazo <gazo@seges.sk>"]
+edition = "2018"
+
+[dependencies]
+lazy_static = "*"
+serde = { version = "1.0", features = ["derive"] }
+tera = "0.11"
