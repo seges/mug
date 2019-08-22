@@ -9,6 +9,8 @@ RUN \
   apt-get install -y python3.7 python3-pip python3.7-venv && \
   rm -rf /var/lib/apt/lists/*
 
+RUN python3.7 -m pip install pip
+
 RUN useradd -m -s /bin/zsh developer && \
     apt-get update && apt-get install -y mc git-flow git-extras curl zsh jq locales openjdk-8-jre-headless sudo
 # && \
