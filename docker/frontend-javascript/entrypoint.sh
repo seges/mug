@@ -6,6 +6,8 @@
 #	done
 #fi
 
+eval $( fixuid )
+
 echo "RUN_SSH=$RUN_SSH"
 echo "RUN_IN_FOREGROUND=$RUN_IN_FOREGROUND"
 
