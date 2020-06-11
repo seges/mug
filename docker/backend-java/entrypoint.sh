@@ -8,6 +8,11 @@
 
 echo "RUN_SSH=$RUN_SSH"
 echo "RUN_IN_FOREGROUND=$RUN_IN_FOREGROUND"
+echo "FIXUID=$FIXUID"
+
+if [ "$FIXUID" = "true" ]; then
+  eval $( fixuid )
+fi
 
 if [ "$RUN_SSH" = "true" ]; then
   sudo /etc/init.d/ssh start
