@@ -22,8 +22,7 @@ for module in $modules; do
 	if [ "$version" == "" ]; then
 		docker build --rm -t seges/mug-$module $module
 	else
-		cp $module/Dockerfile.$version $module/Dockerfile
-		docker build --rm -t seges/mug-$module:$version $module
+		docker build --rm -f $module/Dockerfile.$version -t seges/mug-$module:$version $module
 	fi
 
 	if [ -f $module/Dockerfile.$version ]; then

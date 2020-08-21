@@ -33,16 +33,11 @@ function get_version {
 		exit 42
 	fi
 	
-	if [ ! -f $module/Dockerfile ]; then
-		if [ "$potential_version" == "" ]; then
-			echo "Please specify version of the module to be built"
-			echo ""
-			usage
-			exit 42
-		fi
-
-		echo "$potential_version"
-	else
+	if [ "$potential_version" == "" ]; then
+		echo "Please specify version of the module to be built"
 		echo ""
+		usage
+		exit 42
 	fi
+	echo "$potential_version"
 }
