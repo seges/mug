@@ -25,9 +25,5 @@ for module in $modules; do
 		docker build --rm -f $module/Dockerfile.$version -t seges/mug-$module:$version $module
 	fi
 
-	if [ -f $module/Dockerfile.$version ]; then
-		rm $module/Dockerfile
-	fi
-
 	echo -e "\e[1m**** Finished building module $module\e[0m"
 done
