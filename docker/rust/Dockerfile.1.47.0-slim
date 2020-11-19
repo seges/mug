@@ -7,9 +7,11 @@ RUN \
                      python python-dev python-pip python-virtualenv \
                      python3.7 python3-pip python3.7-venv \
                      openssh-server \
-                     mc git-flow git-extras curl zsh fish jq locales openjdk-8-jre-headless sudo && \
+                     mc git-flow git-extras curl zsh fish jq locales default-jre-headless sudo \
+                     pkg-config libssl-dev && \
   rm -rf /var/lib/apt/lists/*
 
+#                     mc git-flow git-extras curl zsh fish jq locales default-jre-headless openjdk-11-jre-headless sudo && \
 RUN addgroup --gid 1000 developer && \
     adduser --uid 1000 --ingroup developer --home /home/developer --shell /bin/bash --disabled-password developer &&\
     echo "developer ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/developer && \
