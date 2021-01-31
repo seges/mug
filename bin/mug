@@ -20,7 +20,7 @@ function getXmlVal() {
 }
 
 function getTomlVal() {
-  cat $cwd/Cargo.toml | sed -n 's/^name = "\(.*\)"/\1/p'
+  cat $cwd/Cargo.toml | sed -n 's/^name = "\(.*\)"/\1/p' | head -1
 }
 
 
@@ -149,6 +149,9 @@ if [ "$1" == "" ]; then
     echo "$environments" | grep DISPLAY
     if [ $? -ne 0 ]; then
       environments="$environments -e DISPLAY=$DISPLAY"
+      environments="$environments -e RUN_IN_FOREGROUND=true"
+      volumes="$volumes -v /tmp/.X11-unix:/tmp/.X11-unix"
+      version=":14.8.0-1 bash"
     fi
     echo "$volumes" | grep /tmp/.X11-unix 
     if [ $? -ne 0 ]; then
