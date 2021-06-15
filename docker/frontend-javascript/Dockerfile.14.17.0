@@ -5,7 +5,7 @@ RUN \
   apt-get install -y build-essential \
                      curl git htop man unzip vim wget libnss3-tools \
                      python python-dev python-pip python-virtualenv \
-                     python3.7 python3-pip python3.7-venv \
+                     python3.7 python3.7-dev python3-pip python3.7-venv \
                      openssh-server \
                      mc git-flow git-extras curl zsh fish jq locales openjdk-8-jre-headless sudo && \
   rm -rf /var/lib/apt/lists/*
