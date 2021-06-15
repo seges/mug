@@ -12,8 +12,8 @@ RUN \
 
 RUN python3.7 -m pip install pip
 
-RUN addgroup -g 1000 developer && \
-    adduser -u 1000 -G developer -h /home/developer -s /bin/bash -D developer &&\
+RUN addgroup --gid 1000 developer && \
+    adduser --gecos '' --uid 1000 --gid 1000 --home /home/developer --shell /bin/bash --disabled-password developer &&\
     echo "developer ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/developer && \
     chmod 0440 /etc/sudoers.d/developer
 
