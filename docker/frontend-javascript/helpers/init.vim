@@ -20,15 +20,13 @@ Plug 'mxw/vim-jsx'
 
 Plug 'vim-scripts/paredit.vim'
 
-Plug 'icymind/NeoSolarized'
-
 Plug 'plasticboy/vim-markdown'
 
 call plug#end()
 
 set termguicolors
 set background=light
-colorscheme NeoSolarized
+colorscheme elflord
 
 let g:netrw_banner = 0
 let g:netrw_liststyle = 3
