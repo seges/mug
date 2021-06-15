@@ -19,6 +19,11 @@ function getXmlVal() {
   python -c "import xml.etree.ElementTree as ET;tree = ET.parse('$cwd/pom.xml');root = tree.getroot();print tree.find('./{http://maven.apache.org/POM/4.0.0}artifactId').text"
 }
 
+function getTomlVal() {
+  cat $cwd/Cargo.toml | sed -n 's/^name = "\(.*\)"/\1/p' | head -1
+}
+
+
 
 function resolve_module
 {
@@ -35,6 +40,9 @@ function resolve_module
   elif [ -f $cwd/pom.xml ]; then
     module="seges/mug-backend-java"
     project_name=$(cat $cwd/pom.xml | getXmlVal )
+  elif [ -f $cwd/Cargo.toml ]; then
+    module="seges/mug-rust"
+    project_name=$(getTomlVal)
   fi
 }
 
@@ -42,7 +50,7 @@ function resolve_version
 {
   local _module="$1"
   local _version=""
-
+  
   for version in $versions; do
     arrIN=(${version//:/ })
     if [ "${arrIN[0]}" == "$_module" ]; then
@@ -124,8 +132,8 @@ if [ "$base_autostart" == "true" ]; then
 fi
 
 if [ "$1" == "" ]; then
-  
   [ "$module" == "" ] && resolve_module
+  #echo "module = $module, version = $version"
   [ "$version" == "" ] && version=$(resolve_version $module)
 
   if [ "$module" == "" ]; then
@@ -141,6 +149,9 @@ if [ "$1" == "" ]; then
     echo "$environments" | grep DISPLAY
     if [ $? -ne 0 ]; then
       environments="$environments -e DISPLAY=$DISPLAY"
+      environments="$environments -e RUN_IN_FOREGROUND=true"
+      volumes="$volumes -v /tmp/.X11-unix:/tmp/.X11-unix"
+      version=":14.8.0-1 bash"
     fi
     echo "$volumes" | grep /tmp/.X11-unix 
     if [ $? -ne 0 ]; then
@@ -151,6 +162,11 @@ if [ "$1" == "" ]; then
     volumes="$volumes -v $HOME/.m2-mug:/home/developer/.m2"
   elif [ "$module" == "seges/mug-backend-java" ]; then
     volumes="$volumes -v $HOME/.m2-mug:/home/developer/.m2"
+  elif [ "$module" == "seges/mug-rust" ]; then
+    environments="$environments -e RUN_IN_FOREGROUND=true"
+    volumes="-v $HOME/.cargo/registry:/usr/local/cargo/registry $volumes"
+    # a bit of a hack...
+    version=":1.47.0-slim bash"
   fi
 
   volumes="-v $HOME/.gnupg:/home/developer/.gnupg -v $HOME/.ssh:/home/developer/.ssh $volumes"
@@ -187,7 +203,6 @@ if [ "$1" == "" ]; then
   else
     $mug_data_cmd && $docker_cmd
   fi
-
 else
   cmd=$1
   shift
