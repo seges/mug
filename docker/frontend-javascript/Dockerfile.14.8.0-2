@@ -2,12 +2,15 @@ FROM ubuntu:18.04
 
 RUN \
   apt-get update && \
-  apt-get install -y build-essential \
+  apt-get install -y build-essential software-properties-common\
                      curl git htop man unzip vim wget libnss3-tools \
                      python python-dev python-pip python-virtualenv \
                      python3.7 python3.7-dev python3-pip python3.7-venv \
                      openssh-server \
                      mc git-flow git-extras curl zsh fish jq locales openjdk-8-jre-headless sudo && \
+  add-apt-repository ppa:neovim-ppa/stable && \
+  apt-get update && \
+  apt-get install -y neovim && \
   rm -rf /var/lib/apt/lists/*
 
 RUN python3.7 -m pip install pip
@@ -40,7 +43,7 @@ RUN mkcert -install
 
 # from node's Dockerfile (https://github.com/nodejs/docker-node/blob/master/14/stretch/Dockerfile)
 
-ENV NODE_VERSION 14.17.0
+ENV NODE_VERSION 14.8.0
 
 RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
   && case "${dpkgArch##*-}" in \
@@ -57,7 +60,6 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
   && for key in \
     4ED778F539E3634C779C87C6D7062848A1AB005C \
     94AE36675C464D64BAFA68DD7434390BDBE9B9C5 \
-    74F12602B6F1C4E913FAA37AD3A89613643B6201 \
     71DCFD284A79C3B38668286BC97EC7A07EDE3FC1 \
     8FCCA13FEF1D0C2E91008E09770F7A9A5AE15600 \
     C4F0DFFF4E8C1A8236409D08E73BC641CC11F4C8 \
@@ -105,6 +107,8 @@ RUN set -ex \
 
 # end from node's Dockerfile
 
+RUN chown -R developer:developer /home/developer
+
 USER developer
 ENV HOME /home/developer
 ENV LANG en_US.UTF-8
@@ -117,5 +121,12 @@ RUN curl -L https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.s
 ADD entrypoint.sh /home/developer/
 ADD docker-entrypoint.d/ /docker-entrypoint.d/
 
-CMD ["/bin/bash", "-c", "/home/developer/entrypoint.sh"]
+COPY helpers/init.vim /home/developer/.config/nvim/
 
+RUN sudo npm i -g neovim
+RUN curl -fLo /home/developer/.local/share/nvim/site/autoload/plug.vim --create-dirs \
+    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+RUN nvim --headless +PlugInstall +qa
+# RUN sudo chown -R developer:developer /home/developer
+
+CMD ["/bin/bash", "-c", "/home/developer/entrypoint.sh"]

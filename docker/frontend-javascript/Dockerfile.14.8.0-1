@@ -2,12 +2,15 @@ FROM ubuntu:18.04
 
 RUN \
   apt-get update && \
-  apt-get install -y build-essential \
+  apt-get install -y build-essential software-properties-common\
                      curl git htop man unzip vim wget libnss3-tools \
                      python python-dev python-pip python-virtualenv \
                      python3.7 python3-pip python3.7-venv \
                      openssh-server \
                      mc git-flow git-extras curl zsh fish jq locales openjdk-8-jre-headless sudo && \
+  add-apt-repository ppa:neovim-ppa/stable && \
+  apt-get update && \
+  apt-get install -y neovim && \
   rm -rf /var/lib/apt/lists/*
 
 RUN python3.7 -m pip install pip
@@ -104,6 +107,8 @@ RUN set -ex \
 
 # end from node's Dockerfile
 
+RUN chown -R developer:developer /home/developer
+
 USER developer
 ENV HOME /home/developer
 ENV LANG en_US.UTF-8
@@ -115,6 +120,14 @@ RUN curl -L https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.s
 
 ADD entrypoint.sh /home/developer/
 ADD docker-entrypoint.d/ /docker-entrypoint.d/
+
+COPY helpers/init.vim /home/developer/.config/nvim/
+
+RUN sudo npm i -g neovim
+RUN curl -fLo /home/developer/.local/share/nvim/site/autoload/plug.vim --create-dirs \
+    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+RUN nvim --headless +PlugInstall +qa
+# RUN sudo chown -R developer:developer /home/developer
 
 CMD ["/bin/bash", "-c", "/home/developer/entrypoint.sh"]
 
