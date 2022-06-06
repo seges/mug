@@ -12,7 +12,8 @@ RUN \
   apt-get update && \
   apt-get install -y curl git htop man unzip vim wget libnss3-tools \
                      python python-dev python-pip python-virtualenv \
-                     python3.9 python3-pip python3.9-venv \
+                     python3.9 python3.9-dev python3-pip python3.9-venv \
+                     python3.7 python3.7-dev python3.7-venv \
                      openssh-server \
                      mc git-flow git-extras curl bash zsh fish jq locales openjdk-8-jre-headless sudo && \
   rm -rf /var/lib/apt/lists/*
@@ -43,9 +44,6 @@ RUN echo "===> Installing python, sudo, and supporting tools..."  && \
     \
     \
     echo "===> Removing unused APT resources..."                  && \
-    apt-get -f -y --auto-remove remove \
-                 gcc python-dev libffi-dev libssl-dev  && \
-#                 gcc python-pip python-dev libffi-dev libssl-dev  && \
     apt-get clean                                                 && \
     rm -rf /var/lib/apt/lists/*  /tmp/*                           && \
     \
