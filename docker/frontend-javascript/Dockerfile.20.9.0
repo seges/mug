@@ -56,7 +56,7 @@ COPY rootCA/rootCA-key.pem /home/developer/.local/share/mkcert/rootCA-key.pem
 
 RUN mkcert -install
 
-# from node's Dockerfile (https://github.com/nodejs/docker-node/blob/master/20/bookworm/Dockerfile)
+# from node's Dockerfile (https://github.com/nodejs/docker-node/blob/master/20/buster/Dockerfile)
 
 ENV NODE_VERSION 20.9.0
 
